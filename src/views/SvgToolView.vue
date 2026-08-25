@@ -11,8 +11,7 @@ import { useTrace } from '@/composables/useTrace'
 import type { TraceOptions } from '@/types/trace'
 
 const route = useRoute()
-const tool = computed(() => route.meta.tool ?? 'preserve')
-const traceMode = computed(() => (tool.value === 'vector' ? 'vector' : 'preserve'))
+const traceMode = ref<'preserve' | 'vector'>(route.query.mode === 'vector' ? 'vector' : 'preserve')
 
 const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
@@ -20,13 +19,15 @@ const resultSvg = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
 const converting = ref(false)
 const traceOptions = ref<TraceOptions>({
-  mode: 'preserve',
+  mode: traceMode.value,
   turdsize: 8,
   extractcolors: true,
   posterizelevel: 16,
 })
 const { trace } = useTrace()
 let traceSeq = 0
+
+const pipeline = computed(() => (traceMode.value === 'vector' ? '矢量描摹' : '原样封装'))
 
 watch(source, (value, _prev, onCleanup) => {
   if (!value) {
@@ -48,7 +49,7 @@ watch(resultSvg, (svg, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch([source, traceOptions, tool], async () => {
+watch([source, traceOptions], async () => {
   const value = source.value
   const seq = ++traceSeq
   resultSvg.value = null
@@ -95,7 +96,7 @@ function onTraceChange(options: TraceOptions) {
   <main class="tool">
     <UploadPanel
       accept-kind="raster"
-      :photo-warning="tool === 'vector'"
+      :photo-warning="traceMode === 'vector'"
       :has-file="!!source"
       @accepted="onAccepted"
     />
@@ -107,12 +108,12 @@ function onTraceChange(options: TraceOptions) {
       :converting="converting"
     />
     <TraceParamPanel
-      :mode="traceMode"
+      v-model:mode="traceMode"
       :disabled="!source"
       :loading="converting"
       @change="onTraceChange"
     />
-    <ResultBar :source="source" :svg="resultSvg" @replace="onReplace" />
+    <ResultBar :source="source" :pipeline="pipeline" :svg="resultSvg" @replace="onReplace" />
   </main>
 </template>
 

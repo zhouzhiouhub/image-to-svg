@@ -13,12 +13,12 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   <main class="home">
     <section class="hero">
       <h1>选择你要做的事</h1>
-      <p>图片在浏览器本地处理，不上传服务器。图片转 SVG 有两种做法，效果不同，请先选功能再上传。</p>
+      <p>图片在浏览器本地处理，不上传服务器。先选要做的事，再上传图片。</p>
     </section>
     <section v-for="group in toolGroups" :key="group.title" class="group">
-      <header class="group-head">
+      <header v-if="group.intro" class="group-head">
         <h2>{{ group.title }}</h2>
-        <p v-if="group.intro">{{ group.intro }}</p>
+        <p>{{ group.intro }}</p>
       </header>
       <div class="grid">
         <RouterLink v-for="tool in group.tools" :key="tool.id" class="card" :to="tool.to">
@@ -72,8 +72,14 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
 
 .card {
@@ -129,10 +135,6 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 
   .hero h1 {
     font-size: 22px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -274,28 +274,37 @@ async function withDecodedImage<T>(
   }
 }
 
+export async function rasterizeSourceToSize(
+  source: CanvasImageSource,
+  sourceWidth: number,
+  sourceHeight: number,
+  options: ResizeOptions,
+): Promise<RasterizeResult> {
+  const output = scaledCanvasSize(options.width, options.height, 1)
+  const canvas = drawFitted(
+    source,
+    sourceWidth,
+    sourceHeight,
+    output.width,
+    output.height,
+    options.fit,
+    resolveBackground(options),
+  )
+  const encoded = await finishCanvas(canvas, options)
+  return {
+    ...encoded,
+    width: output.width,
+    height: output.height,
+    capped: output.capped,
+  }
+}
+
 export async function rasterizeToSize(
   file: File,
   kind: InputKind,
   options: ResizeOptions,
 ): Promise<RasterizeResult> {
-  return withDecodedImage(file, kind, async (source, sourceWidth, sourceHeight) => {
-    const output = scaledCanvasSize(options.width, options.height, 1)
-    const canvas = drawFitted(
-      source,
-      sourceWidth,
-      sourceHeight,
-      output.width,
-      output.height,
-      options.fit,
-      resolveBackground(options),
-    )
-    const encoded = await finishCanvas(canvas, options)
-    return {
-      ...encoded,
-      width: output.width,
-      height: output.height,
-      capped: output.capped,
-    }
-  })
+  return withDecodedImage(file, kind, (source, sourceWidth, sourceHeight) =>
+    rasterizeSourceToSize(source, sourceWidth, sourceHeight, options),
+  )
 }

@@ -45,7 +45,7 @@ watch(
       </div>
       <p v-if="cropWidth && cropHeight" class="hint">选区 {{ cropWidth }} × {{ cropHeight }}</p>
       <el-button size="small" @click="emit('reset')">重置选区</el-button>
-      <p class="hint">在左侧原图上拖拽框选，可拖动选框或四角调整。导出保持原图格式。</p>
+      <p class="hint">在左侧原图上拖拽框选，可拖动选框或四角调整。</p>
     </template>
   </section>
 </template>

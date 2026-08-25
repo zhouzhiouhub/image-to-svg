@@ -11,6 +11,7 @@ const props = defineProps<{
   sourceWidth?: number
   sourceHeight?: number
   sourceFormat?: string
+  resetToken?: number
 }>()
 
 const emit = defineEmits<{
@@ -79,19 +80,28 @@ const presets = computed(() => {
   ]
 })
 
+function applySourceSize() {
+  const width = props.sourceWidth
+  const height = props.sourceHeight
+  if (!width || !height) return
+  form.mode = 'pixel'
+  form.width = Math.round(width)
+  form.height = Math.round(height)
+  form.percent = 100
+  form.lockRatio = true
+  form.fit = 'cover'
+  form.type = rasterTypeFromFormat(props.sourceFormat ?? 'png')
+  form.background = 'transparent'
+  lockedRatio = width / height
+}
+
+watch(() => props.resetToken, applySourceSize)
+
 watch(
-  () => [props.sourceWidth, props.sourceHeight, props.sourceFormat] as const,
-  ([width, height, format]) => {
+  () => [props.sourceWidth, props.sourceHeight] as const,
+  ([width, height], previous) => {
     if (!width || !height) return
-    form.mode = 'pixel'
-    form.width = Math.round(width)
-    form.height = Math.round(height)
-    form.percent = 100
-    form.lockRatio = true
-    form.fit = 'cover'
-    form.type = rasterTypeFromFormat(format ?? 'png')
-    form.background = 'transparent'
-    lockedRatio = width / height
+    if (!previous?.[0] || !previous[1]) applySourceSize()
   },
   { immediate: true },
 )
@@ -213,7 +223,7 @@ function syncFromHeight(value: number | undefined) {
           <el-radio-button value="white">白色</el-radio-button>
         </el-radio-group>
       </div>
-      <p class="hint">导出保持原图格式。若要改格式，请使用「图片格式转换」。</p>
+      <p class="hint">先框选再改导出尺寸。导出保持原图格式。</p>
     </template>
   </section>
 </template>

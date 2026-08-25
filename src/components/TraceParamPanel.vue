@@ -3,10 +3,11 @@ import { computed, reactive, watch } from 'vue'
 import type { TraceOptions } from '@/types/trace'
 
 const props = defineProps<{
-  mode: 'preserve' | 'vector'
   disabled?: boolean
   loading?: boolean
 }>()
+
+const mode = defineModel<'preserve' | 'vector'>('mode', { required: true })
 
 const emit = defineEmits<{
   change: [options: TraceOptions]
@@ -19,7 +20,7 @@ const form = reactive({
 })
 
 const options = computed<TraceOptions>(() => ({
-  mode: props.mode,
+  mode: mode.value,
   turdsize: form.turdsize,
   extractcolors: form.colorMode === 'color',
   posterizelevel: form.colorMode === 'color' ? form.posterizelevel : undefined,
@@ -35,35 +36,45 @@ watch(
 </script>
 
 <template>
-  <section class="panel" :class="{ disabled }">
-    <h2>{{ mode === 'preserve' ? '功能说明' : '描摹参数' }}</h2>
-    <p v-if="disabled">请先上传位图后再开始转换</p>
-    <template v-else>
-      <p v-if="loading">{{ mode === 'preserve' ? '正在保真封装为 SVG…' : '正在描摹为 SVG…' }}</p>
-      <template v-if="mode === 'vector'">
-        <div class="row">
-          <span>色彩</span>
-          <el-radio-group v-model="form.colorMode" size="small">
-            <el-radio-button value="mono">黑白</el-radio-button>
-            <el-radio-button value="color">多色</el-radio-button>
-          </el-radio-group>
-        </div>
-        <div v-if="form.colorMode === 'color'" class="row">
-          <span>层数</span>
-          <el-input-number v-model="form.posterizelevel" :min="4" :max="32" size="small" />
-        </div>
-        <div class="row">
-          <span>去噪</span>
-          <el-input-number v-model="form.turdsize" :min="0" :max="100" size="small" />
-        </div>
-        <p v-if="form.colorMode === 'color'" class="hint">
-          渐变会被拆成色块，无法还原成真正的 SVG 渐变。层数调到 16–24 更接近原图，文件也会更大。
-        </p>
+  <section class="panel">
+    <h2>转换方式</h2>
+    <el-radio-group v-model="mode" size="small">
+      <el-radio-button value="preserve">原样封装</el-radio-button>
+      <el-radio-button value="vector">矢量描摹</el-radio-button>
+    </el-radio-group>
+    <p class="hint">
+      {{
+        mode === 'preserve'
+          ? '把原图像素完整封进 SVG，颜色和透明与原图一致，放大不会变清晰。'
+          : '描成可缩放的矢量路径，适合图标和线稿；复杂渐变会被拆成色块。'
+      }}
+    </p>
+    <div class="params" :class="{ disabled }">
+      <p v-if="disabled">请先上传位图后再开始转换</p>
+      <template v-else>
+        <p v-if="loading">{{ mode === 'preserve' ? '正在保真封装为 SVG…' : '正在描摹为 SVG…' }}</p>
+        <template v-if="mode === 'vector'">
+          <div class="row">
+            <span>色彩</span>
+            <el-radio-group v-model="form.colorMode" size="small">
+              <el-radio-button value="mono">黑白</el-radio-button>
+              <el-radio-button value="color">多色</el-radio-button>
+            </el-radio-group>
+          </div>
+          <div v-if="form.colorMode === 'color'" class="row">
+            <span>层数</span>
+            <el-input-number v-model="form.posterizelevel" :min="4" :max="32" size="small" />
+          </div>
+          <div class="row">
+            <span>去噪</span>
+            <el-input-number v-model="form.turdsize" :min="0" :max="100" size="small" />
+          </div>
+          <p v-if="form.colorMode === 'color'" class="hint">
+            渐变会被拆成色块。层数调到 16–24 更接近原图，文件也会更大。
+          </p>
+        </template>
       </template>
-      <p v-else class="hint">
-        会把原图像素完整封进 SVG，颜色、透明和细节与原图一致。文件内部仍是位图，放大不会变清晰。
-      </p>
-    </template>
+    </div>
   </section>
 </template>
 
@@ -77,7 +88,7 @@ watch(
   gap: 12px;
 }
 
-.panel.disabled {
+.params.disabled {
   opacity: 0.55;
   pointer-events: none;
 }

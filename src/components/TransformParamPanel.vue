@@ -25,7 +25,7 @@ const emit = defineEmits<{
         <el-button size="small" @click="emit('transform', 'flipV')">垂直翻转</el-button>
         <el-button size="small" @click="emit('reset')">恢复原图</el-button>
       </div>
-      <p class="hint">导出保持原图格式。若要改格式，请使用「图片格式转换」。</p>
+      <p class="hint">先调整方向，再在左侧框选。导出保持原图格式。</p>
     </template>
   </section>
 </template>

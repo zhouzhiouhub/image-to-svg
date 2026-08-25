@@ -2,23 +2,24 @@
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
-import type { AcceptedFile } from '@/components/UploadPanel.vue'
-import RasterParamPanel from '@/components/RasterParamPanel.vue'
+import ExportParamPanel from '@/components/ExportParamPanel.vue'
+import type { ExportOptions } from '@/components/ExportParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
 import QueueResultList from '@/components/QueueResultList.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { MAX_QUEUE, useOutputQueue } from '@/composables/useOutputQueue'
 import { useRasterize } from '@/composables/useRasterize'
-import type { RasterOptions } from '@/utils/svgRaster'
 
 const previewUrl = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
-const rasterOptions = ref<RasterOptions>({
+const exportOptions = ref<ExportOptions>({
+  target: 'keep',
+  strategy: 'quality',
   type: 'image/png',
   scale: 1,
   quality: 0.92,
 })
-const { rasterizeFile } = useRasterize()
+const { rasterizeFile, compressFile } = useRasterize()
 const {
   items,
   converting,
@@ -31,7 +32,23 @@ const {
   scheduleRestart,
   downloadItem,
   downloadZip,
-} = useOutputQueue((source) => rasterizeFile(source.file, source.kind, rasterOptions.value))
+} = useOutputQueue(async (source) => {
+  const options = exportOptions.value
+  if (options.target === 'keep') {
+    return compressFile(source.file, source.kind, source.format, {
+      mode: options.strategy,
+      format: 'keep',
+      quality: options.quality,
+    })
+  }
+  return rasterizeFile(source.file, source.kind, {
+    type: options.target,
+    scale: options.scale,
+    quality: options.quality,
+    background: options.background,
+    knockoutWhite: options.knockoutWhite,
+  })
+})
 
 const formatName: Record<string, string> = {
   png: 'PNG',
@@ -50,12 +67,18 @@ const resultBlob = computed(() => single.value?.blob ?? null)
 const resultType = computed(() => single.value?.type ?? 'image/png')
 const resultWidth = computed(() => single.value?.width)
 const resultHeight = computed(() => single.value?.height)
+const keptOriginal = computed(() => single.value?.keptOriginal === true)
 const many = computed(() => items.value.length > 1)
 const pipeline = computed(() => {
-  if (many.value) return `格式转换 ${doneCount.value}/${items.value.length}`
+  if (many.value) {
+    const action = exportOptions.value.target === 'keep' ? '压缩' : '格式转换'
+    return `${action} ${doneCount.value}/${items.value.length}`
+  }
   if (!source.value) return ''
+  if (keptOriginal.value) return '已保留原文件'
   const from = formatName[source.value.format] ?? source.value.format
-  const to = formatName[resultType.value] ?? 'PNG'
+  const to = formatName[resultType.value] ?? from
+  if (exportOptions.value.target === 'keep') return `压缩 · ${from}`
   return `${from} → ${to}`
 })
 
@@ -79,7 +102,7 @@ watch(resultBlob, (blob, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch(rasterOptions, () => {
+watch(exportOptions, () => {
   scheduleRestart()
 })
 
@@ -87,22 +110,22 @@ watch(
   () => single.value?.status,
   (status) => {
     if (status === 'error' && single.value?.error) {
-      ElMessage.error(`转换失败：${single.value.error}`)
+      ElMessage.error(`处理失败：${single.value.error}`)
     }
   },
 )
+
+watch(keptOriginal, (kept) => {
+  if (kept && !many.value) ElMessage.info('压缩后体积未减小，已保留原文件')
+})
 
 onUnmounted(() => {
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
 })
 
-function onRasterChange(options: RasterOptions) {
-  rasterOptions.value = options
-}
-
-function onAccepted(payload: AcceptedFile) {
-  addFiles([payload])
+function onExportChange(options: ExportOptions) {
+  exportOptions.value = options
 }
 </script>
 
@@ -112,7 +135,6 @@ function onAccepted(payload: AcceptedFile) {
       multiple
       :max-files="MAX_QUEUE"
       :has-file="!!source && !many"
-      @accepted="onAccepted"
       @accepted-many="addFiles"
     />
     <CompareView
@@ -120,18 +142,14 @@ function onAccepted(payload: AcceptedFile) {
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
-      result-alt="转换结果"
+      result-alt="处理结果"
       :converting="converting"
     />
-    <RasterParamPanel
-      title="转换参数"
-      empty-text="请先上传图片后再选择导出格式"
-      :loading-text="many ? '正在批量转换…' : '正在转换…'"
-      :initial-scale="1"
+    <ExportParamPanel
       :disabled="!items.length"
       :loading="converting"
       :source-format="source?.format"
-      @change="onRasterChange"
+      @change="onExportChange"
     />
     <QueueResultList
       v-if="many"
@@ -153,6 +171,7 @@ function onAccepted(payload: AcceptedFile) {
       :raster-type="resultType"
       :result-width="resultWidth"
       :result-height="resultHeight"
+      :kept-original="keptOriginal"
       @replace="clearItems"
     />
   </main>

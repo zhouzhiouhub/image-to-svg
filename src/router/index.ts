@@ -1,11 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import SvgToolView from '@/views/SvgToolView.vue'
+import EditToolView from '@/views/EditToolView.vue'
 import FormatToolView from '@/views/FormatToolView.vue'
-import ResizeToolView from '@/views/ResizeToolView.vue'
-import CompressToolView from '@/views/CompressToolView.vue'
-import TransformToolView from '@/views/TransformToolView.vue'
-import CropToolView from '@/views/CropToolView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,58 +14,58 @@ const router = createRouter({
       meta: { title: 'Kinolin Tool' },
     },
     {
-      path: '/svg/preserve',
-      name: 'svg-preserve',
+      path: '/svg',
+      name: 'svg',
       component: SvgToolView,
-      meta: { title: '原样转 SVG', tool: 'preserve' },
+      meta: { title: '图片转 SVG' },
+    },
+    {
+      path: '/svg/preserve',
+      redirect: '/svg',
     },
     {
       path: '/svg/vector',
-      name: 'svg-vector',
-      component: SvgToolView,
-      meta: { title: '矢量描摹', tool: 'vector' },
+      redirect: '/svg?mode=vector',
     },
     {
       path: '/svg/export',
-      redirect: '/format',
+      redirect: '/export',
     },
     {
-      path: '/svg',
-      redirect: '/',
+      path: '/edit',
+      name: 'edit',
+      component: EditToolView,
+      meta: { title: '调整画面' },
+    },
+    {
+      path: '/export',
+      name: 'export',
+      component: FormatToolView,
+      meta: { title: '转格式 / 压缩' },
     },
     {
       path: '/format',
-      name: 'format',
-      component: FormatToolView,
-      meta: { title: '图片格式转换' },
-    },
-    {
-      path: '/resize',
-      name: 'resize',
-      component: ResizeToolView,
-      meta: { title: '图片尺寸调整' },
+      redirect: '/export',
     },
     {
       path: '/compress',
-      name: 'compress',
-      component: CompressToolView,
-      meta: { title: '图片压缩' },
+      redirect: '/export',
+    },
+    {
+      path: '/resize',
+      redirect: '/edit',
     },
     {
       path: '/rotate',
-      name: 'rotate',
-      component: TransformToolView,
-      meta: { title: '旋转与翻转' },
+      redirect: '/edit',
     },
     {
       path: '/crop',
-      name: 'crop',
-      component: CropToolView,
-      meta: { title: '图片裁剪' },
+      redirect: '/edit',
     },
     {
       path: '/batch',
-      redirect: '/format',
+      redirect: '/export',
     },
     {
       path: '/app',
