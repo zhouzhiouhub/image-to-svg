@@ -123,6 +123,10 @@ function onAccepted(payload: AcceptedFile) {
   source.value = payload
 }
 
+function onReplace() {
+  source.value = null
+}
+
 function onCompressChange(options: CompressOptions) {
   compressOptions.value = options
 }
@@ -130,7 +134,7 @@ function onCompressChange(options: CompressOptions) {
 
 <template>
   <main class="tool">
-    <UploadPanel @accepted="onAccepted" />
+    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
@@ -151,6 +155,7 @@ function onCompressChange(options: CompressOptions) {
       :result-width="resultWidth"
       :result-height="resultHeight"
       :kept-original="keptOriginal"
+      @replace="onReplace"
     />
   </main>
 </template>

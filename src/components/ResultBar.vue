@@ -16,6 +16,10 @@ const props = defineProps<{
   keptOriginal?: boolean
 }>()
 
+const emit = defineEmits<{
+  replace: []
+}>()
+
 const pathCount = computed(() => props.svg?.match(/<path\b/gi)?.length ?? 0)
 const svgBytes = computed(() => (props.svg ? new Blob([props.svg]).size : 0))
 const rasterBytes = computed(() => props.rasterBlob?.size ?? 0)
@@ -103,6 +107,7 @@ function downloadRaster() {
           下载 {{ keptOriginal ? '原文件' : rasterExt().toUpperCase() }}
         </el-button>
       </template>
+      <el-button size="small" @click="emit('replace')">换一张</el-button>
     </template>
     <span v-else>上传后可预览体积并下载</span>
   </section>

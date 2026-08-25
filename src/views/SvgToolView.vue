@@ -52,7 +52,10 @@ watch([source, traceOptions, tool], async () => {
   const value = source.value
   const seq = ++traceSeq
   resultSvg.value = null
-  if (!value || value.kind !== 'raster') return
+  if (!value || value.kind !== 'raster') {
+    converting.value = false
+    return
+  }
 
   converting.value = true
   await nextTick()
@@ -79,6 +82,10 @@ function onAccepted(payload: AcceptedFile) {
   source.value = payload
 }
 
+function onReplace() {
+  source.value = null
+}
+
 function onTraceChange(options: TraceOptions) {
   traceOptions.value = { ...options, mode: traceMode.value }
 }
@@ -89,6 +96,7 @@ function onTraceChange(options: TraceOptions) {
     <UploadPanel
       accept-kind="raster"
       :photo-warning="tool === 'vector'"
+      :has-file="!!source"
       @accepted="onAccepted"
     />
     <CompareView
@@ -104,7 +112,7 @@ function onTraceChange(options: TraceOptions) {
       :loading="converting"
       @change="onTraceChange"
     />
-    <ResultBar :source="source" :svg="resultSvg" />
+    <ResultBar :source="source" :svg="resultSvg" @replace="onReplace" />
   </main>
 </template>
 

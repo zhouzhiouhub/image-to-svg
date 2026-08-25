@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile, UploadFiles } from 'element-plus'
 import { useFileValidate } from '@/composables/useFileValidate'
@@ -17,6 +17,7 @@ export type AcceptedFile = ValidateSuccess & { file: File }
 const props = defineProps<{
   acceptKind?: InputKind
   photoWarning?: boolean
+  hasFile?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -24,7 +25,6 @@ const emit = defineEmits<{
 }>()
 
 const { validate } = useFileValidate()
-const uploaded = ref(false)
 
 const accept = computed(() => {
   if (props.acceptKind === 'raster') return ACCEPT_RASTER_ATTR
@@ -49,7 +49,6 @@ async function acceptFile(file: File) {
   }
   if (result.warning) ElMessage.warning(result.warning)
   if (result.info) ElMessage.info(result.info)
-  uploaded.value = true
   emit('accepted', { ...result, file })
 }
 
@@ -75,7 +74,7 @@ defineExpose({ acceptFile })
 
 <template>
   <el-upload
-    v-if="!uploaded"
+    v-if="!hasFile"
     class="uploader"
     drag
     :auto-upload="false"

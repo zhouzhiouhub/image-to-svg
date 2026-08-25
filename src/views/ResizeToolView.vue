@@ -115,6 +115,10 @@ function onAccepted(payload: AcceptedFile) {
   source.value = payload
 }
 
+function onReplace() {
+  source.value = null
+}
+
 function onResizeChange(options: ResizeOptions) {
   resizeOptions.value = options
 }
@@ -122,7 +126,7 @@ function onResizeChange(options: ResizeOptions) {
 
 <template>
   <main class="tool">
-    <UploadPanel @accepted="onAccepted" />
+    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
@@ -145,6 +149,7 @@ function onResizeChange(options: ResizeOptions) {
       :raster-type="resultType"
       :result-width="resultWidth"
       :result-height="resultHeight"
+      @replace="onReplace"
     />
   </main>
 </template>

@@ -123,6 +123,10 @@ function onAccepted(payload: AcceptedFile) {
   source.value = payload
 }
 
+function onReplace() {
+  source.value = null
+}
+
 function onRasterChange(options: RasterOptions) {
   rasterOptions.value = options
 }
@@ -130,7 +134,7 @@ function onRasterChange(options: RasterOptions) {
 
 <template>
   <main class="tool">
-    <UploadPanel @accepted="onAccepted" />
+    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
@@ -155,6 +159,7 @@ function onRasterChange(options: RasterOptions) {
       :raster-type="resultType"
       :result-width="resultWidth"
       :result-height="resultHeight"
+      @replace="onReplace"
     />
   </main>
 </template>
