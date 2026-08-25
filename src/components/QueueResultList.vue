@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { QueueItem } from '@/composables/useOutputQueue'
 import { formatBytes } from '@/utils/format'
+import { t } from '@/i18n'
 
 defineProps<{
   items: QueueItem[]
@@ -21,28 +22,28 @@ const emit = defineEmits<{
 <template>
   <section class="list">
     <header>
-      <span>{{ items.length ? summary : '尚未添加图片' }}</span>
-      <span v-if="errorCount">失败 {{ errorCount }}</span>
-      <el-button size="small" :disabled="!doneCount" @click="emit('zip')">下载 ZIP</el-button>
-      <el-button size="small" :disabled="!items.length" @click="emit('clear')">清空</el-button>
+      <span>{{ items.length ? summary : t('queue.empty') }}</span>
+      <span v-if="errorCount">{{ t('queue.failed', { n: errorCount }) }}</span>
+      <el-button size="small" :disabled="!doneCount" @click="emit('zip')">{{ t('queue.zip') }}</el-button>
+      <el-button size="small" :disabled="!items.length" @click="emit('clear')">{{ t('queue.clear') }}</el-button>
     </header>
-    <p v-if="!items.length" class="empty">可一次拖入多张，按当前参数逐张处理</p>
+    <p v-if="!items.length" class="empty">{{ t('queue.hint') }}</p>
     <ul v-else>
       <li v-for="item in items" :key="item.id">
         <div class="meta">
           <strong>{{ item.source.file.name }}</strong>
           <span>{{ formatBytes(item.source.file.size) }}</span>
-          <span v-if="item.status === 'running'">处理中…</span>
-          <span v-else-if="item.status === 'queued'">排队中</span>
+          <span v-if="item.status === 'running'">{{ t('queue.running') }}</span>
+          <span v-else-if="item.status === 'queued'">{{ t('queue.queued') }}</span>
           <span v-else-if="item.status === 'error'" class="warn">{{ item.error }}</span>
           <span v-else-if="item.blob">
             → {{ formatBytes(item.blob.size) }}
-            <template v-if="item.keptOriginal"> · 已保留原文件</template>
+            <template v-if="item.keptOriginal"> · {{ t('queue.kept') }}</template>
           </span>
         </div>
         <div class="actions">
-          <el-button size="small" :disabled="!item.blob" @click="emit('download', item)">下载</el-button>
-          <el-button size="small" @click="emit('remove', item.id)">移除</el-button>
+          <el-button size="small" :disabled="!item.blob" @click="emit('download', item)">{{ t('queue.download') }}</el-button>
+          <el-button size="small" @click="emit('remove', item.id)">{{ t('queue.remove') }}</el-button>
         </div>
       </li>
     </ul>

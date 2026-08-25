@@ -9,6 +9,7 @@ import QueueResultList from '@/components/QueueResultList.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { MAX_QUEUE, useOutputQueue } from '@/composables/useOutputQueue'
 import { useRasterize } from '@/composables/useRasterize'
+import { t } from '@/i18n'
 
 const previewUrl = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
@@ -71,14 +72,14 @@ const keptOriginal = computed(() => single.value?.keptOriginal === true)
 const many = computed(() => items.value.length > 1)
 const pipeline = computed(() => {
   if (many.value) {
-    const action = exportOptions.value.target === 'keep' ? '压缩' : '格式转换'
-    return `${action} ${doneCount.value}/${items.value.length}`
+    const action = exportOptions.value.target === 'keep' ? t('queue.compress') : t('queue.convert')
+    return t('queue.progress', { action, done: doneCount.value, total: items.value.length })
   }
   if (!source.value) return ''
-  if (keptOriginal.value) return '已保留原文件'
+  if (keptOriginal.value) return t('queue.kept')
   const from = formatName[source.value.format] ?? source.value.format
   const to = formatName[resultType.value] ?? from
-  if (exportOptions.value.target === 'keep') return `压缩 · ${from}`
+  if (exportOptions.value.target === 'keep') return t('queue.compressFmt', { fmt: from })
   return `${from} → ${to}`
 })
 
@@ -110,13 +111,13 @@ watch(
   () => single.value?.status,
   (status) => {
     if (status === 'error' && single.value?.error) {
-      ElMessage.error(`处理失败：${single.value.error}`)
+      ElMessage.error(t('queue.failedDetail', { detail: single.value.error }))
     }
   },
 )
 
 watch(keptOriginal, (kept) => {
-  if (kept && !many.value) ElMessage.info('压缩后体积未减小，已保留原文件')
+  if (kept && !many.value) ElMessage.info(t('queue.keptInfo'))
 })
 
 onUnmounted(() => {
@@ -142,7 +143,7 @@ function onExportChange(options: ExportOptions) {
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
-      result-alt="处理结果"
+      :result-alt="t('compare.exportAlt')"
       :converting="converting"
     />
     <ExportParamPanel

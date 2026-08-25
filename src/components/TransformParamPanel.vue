@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TransformOp } from '@/utils/transformImage'
+import { t } from '@/i18n'
 
 defineProps<{
   disabled?: boolean
@@ -14,18 +15,18 @@ const emit = defineEmits<{
 
 <template>
   <section class="panel" :class="{ disabled }">
-    <h2>旋转与翻转</h2>
-    <p v-if="disabled">请先上传图片后再调整方向</p>
+    <h2>{{ t('transform.title') }}</h2>
+    <p v-if="disabled">{{ t('transform.needFile') }}</p>
     <template v-else>
-      <p v-if="loading">正在处理…</p>
+      <p v-if="loading">{{ t('transform.loading') }}</p>
       <div class="actions">
-        <el-button size="small" @click="emit('transform', 'ccw')">向左 90°</el-button>
-        <el-button size="small" @click="emit('transform', 'cw')">向右 90°</el-button>
-        <el-button size="small" @click="emit('transform', 'flipH')">水平翻转</el-button>
-        <el-button size="small" @click="emit('transform', 'flipV')">垂直翻转</el-button>
-        <el-button size="small" @click="emit('reset')">恢复原图</el-button>
+        <el-button size="small" @click="emit('transform', 'ccw')">{{ t('transform.ccw') }}</el-button>
+        <el-button size="small" @click="emit('transform', 'cw')">{{ t('transform.cw') }}</el-button>
+        <el-button size="small" @click="emit('transform', 'flipH')">{{ t('transform.flipH') }}</el-button>
+        <el-button size="small" @click="emit('transform', 'flipV')">{{ t('transform.flipV') }}</el-button>
+        <el-button size="small" @click="emit('reset')">{{ t('transform.reset') }}</el-button>
       </div>
-      <p class="hint">先调整方向，再在左侧框选。导出保持原图格式。</p>
+      <p class="hint">{{ t('transform.hint') }}</p>
     </template>
   </section>
 </template>

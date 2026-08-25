@@ -4,6 +4,7 @@ import { MAX_EDGE_PX } from '@/types/input'
 import type { RasterFormat, ResizeFit, ResizeOptions } from '@/utils/svgRaster'
 import { rasterTypeFromFormat } from '@/utils/svgRaster'
 import { isOpaqueRasterSource } from '@/utils/knockoutWhite'
+import { t } from '@/i18n'
 
 const props = defineProps<{
   disabled?: boolean
@@ -71,7 +72,7 @@ const presets = computed(() => {
   const width = props.sourceWidth ?? 0
   const height = props.sourceHeight ?? 0
   return [
-    { id: 'original', label: '原尺寸', width, height },
+    { id: 'original', label: t('resize.original'), width, height },
     { id: '256', label: '256²', width: 256, height: 256 },
     { id: '512', label: '512²', width: 512, height: 512 },
     { id: '1080', label: '1080²', width: 1080, height: 1080 },
@@ -156,25 +157,25 @@ function syncFromHeight(value: number | undefined) {
 
 <template>
   <section class="panel" :class="{ disabled }">
-    <h2>尺寸参数</h2>
-    <p v-if="disabled">请先上传图片后再调整尺寸</p>
+    <h2>{{ t('resize.title') }}</h2>
+    <p v-if="disabled">{{ t('resize.needFile') }}</p>
     <template v-else>
-      <p v-if="loading">正在调整尺寸…</p>
+      <p v-if="loading">{{ t('resize.loading') }}</p>
       <el-radio-group v-model="form.mode" size="small">
-        <el-radio-button value="pixel">像素</el-radio-button>
-        <el-radio-button value="percent">比例</el-radio-button>
+        <el-radio-button value="pixel">{{ t('resize.pixel') }}</el-radio-button>
+        <el-radio-button value="percent">{{ t('resize.percent') }}</el-radio-button>
       </el-radio-group>
       <template v-if="form.mode === 'percent'">
         <div class="row">
-          <span>缩放</span>
+          <span>{{ t('resize.scale') }}</span>
           <el-slider v-model="form.percent" :min="1" :max="maxPercent" :step="1" />
           <el-input-number v-model="form.percent" :min="1" :max="maxPercent" size="small" />
         </div>
-        <p class="hint">结果 {{ outputSize.width }} × {{ outputSize.height }}</p>
+        <p class="hint">{{ t('resize.result', { w: outputSize.width, h: outputSize.height }) }}</p>
       </template>
       <template v-else>
         <div class="row">
-          <span>宽</span>
+          <span>{{ t('resize.width') }}</span>
           <el-input-number
             v-model="form.width"
             :min="1"
@@ -183,7 +184,7 @@ function syncFromHeight(value: number | undefined) {
             controls-position="right"
             @change="syncFromWidth"
           />
-          <span>高</span>
+          <span>{{ t('resize.height') }}</span>
           <el-input-number
             v-model="form.height"
             :min="1"
@@ -194,8 +195,8 @@ function syncFromHeight(value: number | undefined) {
           />
         </div>
         <div class="row">
-          <span>比例</span>
-          <el-switch v-model="form.lockRatio" active-text="保持宽高比" />
+          <span>{{ t('resize.ratio') }}</span>
+          <el-switch v-model="form.lockRatio" :active-text="t('resize.lock')" />
         </div>
         <div class="presets">
           <el-button
@@ -208,22 +209,22 @@ function syncFromHeight(value: number | undefined) {
           </el-button>
         </div>
         <div v-if="showFit" class="row">
-          <span>适配</span>
+          <span>{{ t('resize.fit') }}</span>
           <el-radio-group v-model="form.fit" size="small">
-            <el-radio-button value="contain">完整显示</el-radio-button>
-            <el-radio-button value="cover">居中裁剪</el-radio-button>
-            <el-radio-button value="stretch">拉伸</el-radio-button>
+            <el-radio-button value="contain">{{ t('resize.contain') }}</el-radio-button>
+            <el-radio-button value="cover">{{ t('resize.cover') }}</el-radio-button>
+            <el-radio-button value="stretch">{{ t('resize.stretch') }}</el-radio-button>
           </el-radio-group>
         </div>
       </template>
       <div v-if="showBackground" class="row">
-        <span>背景</span>
+        <span>{{ t('resize.background') }}</span>
         <el-radio-group v-model="form.background" size="small">
-          <el-radio-button value="transparent">透明</el-radio-button>
-          <el-radio-button value="white">白色</el-radio-button>
+          <el-radio-button value="transparent">{{ t('resize.transparent') }}</el-radio-button>
+          <el-radio-button value="white">{{ t('resize.white') }}</el-radio-button>
         </el-radio-group>
       </div>
-      <p class="hint">先框选再改导出尺寸。导出保持原图格式。</p>
+      <p class="hint">{{ t('resize.hint') }}</p>
     </template>
   </section>
 </template>

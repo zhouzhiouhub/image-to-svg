@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import { uniqueZipName, zipStore } from '@/utils/zipStore'
 import type { RasterFormat } from '@/utils/svgRaster'
+import { t } from '@/i18n'
 
 export const MAX_QUEUE = 30
 
@@ -68,7 +69,7 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
     const existing = new Set(items.value.map((item) => fileKey(item.source.file)))
     const room = MAX_QUEUE - items.value.length
     if (room <= 0) {
-      ElMessage.warning(`最多同时处理 ${MAX_QUEUE} 张`)
+      ElMessage.warning(t('queue.max', { n: MAX_QUEUE }))
       return
     }
     const next: QueueItem[] = []
@@ -82,7 +83,7 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
     }
     if (!next.length) return
     if (files.length > next.length && items.value.length + next.length >= MAX_QUEUE) {
-      ElMessage.warning(`最多同时处理 ${MAX_QUEUE} 张，已截取`)
+      ElMessage.warning(t('queue.maxSlice', { n: MAX_QUEUE }))
     }
     items.value = [...items.value, ...next]
     void runQueue()
@@ -119,7 +120,7 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
         if (current !== jobSeq) return
         item.blob = undefined
         item.status = 'error'
-        item.error = error instanceof Error && error.message ? error.message : '处理失败'
+        item.error = error instanceof Error && error.message ? error.message : t('errors.failed')
       }
       await new Promise((resolve) => setTimeout(resolve, 0))
     }
@@ -152,7 +153,7 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
   async function downloadZip() {
     const ready = items.value.filter((item) => item.status === 'done' && item.blob)
     if (!ready.length) {
-      ElMessage.warning('还没有可下载的结果')
+      ElMessage.warning(t('queue.noneReady'))
       return
     }
     const used = new Set<string>()

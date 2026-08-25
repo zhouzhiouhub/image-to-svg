@@ -6,6 +6,7 @@ import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import { recordHistory } from '@/composables/useSessionHistory'
 import { formatBytes } from '@/utils/format'
 import type { RasterFormat } from '@/utils/svgRaster'
+import { t } from '@/i18n'
 
 const props = defineProps<{
   source?: AcceptedFile | null
@@ -41,7 +42,7 @@ const savedPercent = computed(() => {
 const pipelineLabel = computed(() => {
   if (props.pipeline) return props.pipeline
   if (!props.source) return ''
-  return props.source.kind === 'svg' ? 'SVG → 位图' : '位图 → SVG'
+  return props.source.kind === 'svg' ? t('result.svgToRaster') : t('result.rasterToSvg')
 })
 
 function fileStem() {
@@ -60,9 +61,9 @@ async function copySvg() {
   if (!props.svg) return
   try {
     await navigator.clipboard.writeText(props.svg)
-    ElMessage.success('已复制 SVG 代码')
+    ElMessage.success(t('result.copied'))
   } catch {
-    ElMessage.error('复制失败，请手动选择代码')
+    ElMessage.error(t('result.copyFail'))
   }
 }
 
@@ -98,7 +99,7 @@ watch(
       if (!props.source || (!props.svg && !props.rasterBlob)) return
       recordHistory({
         groupKey: `${String(route.name)}:${props.source.file.name}:${props.source.file.size}`,
-        title: typeof route.meta.title === 'string' ? route.meta.title : '处理结果',
+        title: t(`seo.${String(route.name)}.title`) || t('result.fallback'),
         pipeline: props.pipeline ?? '',
         sourceName: props.source.file.name,
         svg: props.svg ?? undefined,
@@ -124,22 +125,22 @@ onUnmounted(() => {
       <span v-if="source.width && source.height">{{ source.width }} × {{ source.height }}</span>
       <template v-if="svg">
         <span :class="{ warn: larger }">SVG {{ formatBytes(svgBytes) }}</span>
-        <span>路径 {{ pathCount }}</span>
-        <el-button size="small" type="primary" @click="downloadSvg">下载 SVG</el-button>
-        <el-button size="small" @click="copySvg">复制代码</el-button>
+        <span>{{ t('result.paths', { n: pathCount }) }}</span>
+        <el-button size="small" type="primary" @click="downloadSvg">{{ t('result.downloadSvg') }}</el-button>
+        <el-button size="small" @click="copySvg">{{ t('result.copy') }}</el-button>
       </template>
       <template v-if="rasterBlob">
-        <span :class="{ warn: larger, ok: savedPercent > 0 }">结果 {{ formatBytes(rasterBytes) }}</span>
-        <span v-if="savedPercent > 0">减小 {{ savedPercent }}%</span>
-        <span v-else-if="keptOriginal">体积未减小</span>
+        <span :class="{ warn: larger, ok: savedPercent > 0 }">{{ t('result.output', { size: formatBytes(rasterBytes) }) }}</span>
+        <span v-if="savedPercent > 0">{{ t('result.saved', { n: savedPercent }) }}</span>
+        <span v-else-if="keptOriginal">{{ t('result.notSmaller') }}</span>
         <span v-if="resultWidth && resultHeight">{{ resultWidth }} × {{ resultHeight }}</span>
         <el-button size="small" type="primary" @click="downloadRaster">
-          下载 {{ keptOriginal ? '原文件' : rasterExt().toUpperCase() }}
+          {{ t('result.download', { name: keptOriginal ? t('result.originalFile') : rasterExt().toUpperCase() }) }}
         </el-button>
       </template>
-      <el-button size="small" @click="emit('replace')">换一张</el-button>
+      <el-button size="small" @click="emit('replace')">{{ t('result.replace') }}</el-button>
     </template>
-    <span v-else>上传后可预览体积并下载</span>
+    <span v-else>{{ t('result.empty') }}</span>
   </section>
 </template>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { clampCrop, type CropRect } from '@/utils/cropImage'
+import { t } from '@/i18n'
 
 const props = defineProps<{
   src: string
@@ -172,7 +173,7 @@ onUnmounted(() => {
     <img
       ref="image"
       :src="src"
-      alt="裁剪原图"
+      :alt="t('crop.alt')"
       draggable="false"
       @load="measure"
     />

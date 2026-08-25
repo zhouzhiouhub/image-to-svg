@@ -1,9 +1,9 @@
 import type { RouteLocationNormalized } from 'vue-router'
+import { currentLocale, htmlLang } from './i18n'
 import { SITE_NAME, seoSnapshot } from './seoPages'
 
 export {
   SITE_NAME,
-  DEFAULT_DESCRIPTION,
   seoPages,
   INDEXABLE_ROUTE_NAMES,
   canonicalUrl,
@@ -41,8 +41,10 @@ function upsertLink(rel: string, href: string) {
 
 export function applyRouteSeo(to: RouteLocationNormalized) {
   const name = typeof to.name === 'string' ? to.name : 'notFound'
-  const seo = seoSnapshot(name, siteOrigin())
+  const locale = currentLocale()
+  const seo = seoSnapshot(name, siteOrigin(), locale)
 
+  document.documentElement.lang = htmlLang(locale)
   document.title = seo.fullTitle
   upsertMeta('meta[name="description"]', { name: 'description', content: seo.description })
   upsertMeta('meta[name="robots"]', { name: 'robots', content: seo.robots })
@@ -50,7 +52,7 @@ export function applyRouteSeo(to: RouteLocationNormalized) {
   upsertMeta('meta[property="og:description"]', { property: 'og:description', content: seo.description })
   upsertMeta('meta[property="og:url"]', { property: 'og:url', content: seo.url })
   upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'website' })
-  upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: 'zh_CN' })
+  upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: seo.ogLocale })
   upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: SITE_NAME })
   upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary' })
   upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: seo.fullTitle })

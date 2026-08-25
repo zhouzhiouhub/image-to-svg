@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { toolGroups, type ToolStatus } from '@/data/tools'
+import { homeTools, type ToolStatus } from '@/data/tools'
+import { t } from '@/i18n'
 
 const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   available: 'success',
@@ -12,24 +13,18 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 <template>
   <main class="home">
     <section class="hero">
-      <h1>图片处理</h1>
-      <p>
-        免费在浏览器本地把 PNG、JPG 转成 SVG，也能裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。
-      </p>
+      <h1>{{ t('home.title') }}</h1>
+      <p>{{ t('home.lead') }}</p>
     </section>
-    <nav v-for="group in toolGroups" :key="group.title" class="group" aria-label="功能列表">
-      <header v-if="group.intro" class="group-head">
-        <h2>{{ group.title }}</h2>
-        <p>{{ group.intro }}</p>
-      </header>
+    <nav class="group" :aria-label="t('nav.list')">
       <div class="grid">
-        <RouterLink v-for="tool in group.tools" :key="tool.id" class="card" :to="tool.to">
+        <RouterLink v-for="tool in homeTools" :key="tool.id" class="card" :to="tool.to">
           <div class="card-top">
-            <h3>{{ tool.title }}</h3>
-            <el-tag size="small" :type="tagType[tool.status]">{{ tool.statusLabel }}</el-tag>
+            <h3>{{ t(`tools.${tool.id}.title`) }}</h3>
+            <el-tag size="small" :type="tagType[tool.status]">{{ t('tools.available') }}</el-tag>
           </div>
-          <p>{{ tool.description }}</p>
-          <span class="action">{{ tool.status === 'available' ? '开始使用' : '查看计划' }}</span>
+          <p>{{ t(`tools.${tool.id}.description`) }}</p>
+          <span class="action">{{ tool.status === 'available' ? t('home.start') : t('home.soon') }}</span>
         </RouterLink>
       </div>
     </nav>
@@ -52,8 +47,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   font-weight: 600;
 }
 
-.hero p,
-.group-head p {
+.hero p {
   margin: 0;
   max-width: 640px;
   color: #606266;
@@ -64,12 +58,6 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-.group-head h2 {
-  margin: 0 0 4px;
-  font-size: 16px;
-  font-weight: 600;
 }
 
 .grid {

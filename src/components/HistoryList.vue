@@ -2,6 +2,7 @@
 import { useSessionHistory, removeHistory, clearHistory } from '@/composables/useSessionHistory'
 import { formatBytes } from '@/utils/format'
 import type { RasterFormat } from '@/utils/svgRaster'
+import { t } from '@/i18n'
 
 const { records } = useSessionHistory()
 
@@ -42,10 +43,10 @@ function downloadRaster(record: (typeof records.value)[number]) {
   <section v-if="records.length" class="panel">
     <header>
       <div>
-        <h2>刚才的结果</h2>
-        <p class="hint">保存在这台电脑上，清除浏览器站点数据后才会消失</p>
+        <h2>{{ t('history.title') }}</h2>
+        <p class="hint">{{ t('history.hint') }}</p>
       </div>
-      <el-button size="small" @click="clearHistory">清空</el-button>
+      <el-button size="small" @click="clearHistory">{{ t('history.clear') }}</el-button>
     </header>
     <ul>
       <li v-for="item in records" :key="item.id">
@@ -60,9 +61,9 @@ function downloadRaster(record: (typeof records.value)[number]) {
             SVG
           </el-button>
           <el-button v-if="item.rasterBlob" size="small" type="primary" @click="downloadRaster(item)">
-            下载
+            {{ t('history.download') }}
           </el-button>
-          <el-button size="small" @click="removeHistory(item.id)">移除</el-button>
+          <el-button size="small" @click="removeHistory(item.id)">{{ t('history.remove') }}</el-button>
         </div>
       </li>
     </ul>

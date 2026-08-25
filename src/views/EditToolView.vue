@@ -16,6 +16,7 @@ import {
 } from '@/utils/transformImage'
 import { clampCrop, cropToCanvas, fitCropAspect, fullCrop, type CropRect } from '@/utils/cropImage'
 import { rasterizeSourceToSize, type RasterFormat, type ResizeOptions } from '@/utils/svgRaster'
+import { t } from '@/i18n'
 
 const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
@@ -47,7 +48,7 @@ const imageWidth = computed(() => frameWidth.value)
 const imageHeight = computed(() => frameHeight.value)
 const pipeline = computed(() => {
   if (!source.value) return ''
-  if (!resultWidth.value || !resultHeight.value) return '调整画面'
+  if (!resultWidth.value || !resultHeight.value) return t('pipeline.edit')
   return `${source.value.width} × ${source.value.height} → ${resultWidth.value} × ${resultHeight.value}`
 })
 
@@ -83,7 +84,7 @@ watch(source, async (value) => {
   } catch (error) {
     converting.value = false
     const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `处理失败：${detail}` : '处理失败，请换一张图片后重试')
+    ElMessage.error(detail ? t('errors.processDetail', { detail }) : t('errors.processRetry'))
   }
 })
 
@@ -145,12 +146,12 @@ async function runEncode(seq: number) {
     resultWidth.value = result.width
     resultHeight.value = result.height
     if (result.fallbackToPng) {
-      ElMessage.warning('当前浏览器无法编码 WebP，已改为 PNG')
+      ElMessage.warning(t('errors.webp'))
     }
   } catch (error) {
     if (seq !== jobSeq) return
     const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `调整失败：${detail}` : '调整失败')
+    ElMessage.error(detail ? t('errors.editDetail', { detail }) : t('errors.edit'))
   } finally {
     if (seq === jobSeq) converting.value = false
   }
@@ -181,7 +182,7 @@ async function onTransform(op: TransformOp) {
   } catch (error) {
     converting.value = false
     const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `处理失败：${detail}` : '处理失败')
+    ElMessage.error(detail ? t('errors.processDetail', { detail }) : t('errors.process'))
   }
 }
 
@@ -203,7 +204,7 @@ async function onResetAll() {
   } catch (error) {
     converting.value = false
     const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `恢复失败：${detail}` : '恢复失败')
+    ElMessage.error(detail ? t('errors.restoreDetail', { detail }) : t('errors.restore'))
   }
 }
 
@@ -252,12 +253,12 @@ function onReplace() {
           :aspect="aspect"
           v-model:crop="crop"
         />
-        <span v-else>原图预览</span>
+        <span v-else>{{ t('compare.original') }}</span>
       </div>
       <div class="pane">
-        <img v-if="resultUrl" :src="resultUrl" alt="调整结果" :class="{ dim: converting }" />
-        <span v-else-if="converting">处理中…</span>
-        <span v-else>结果预览</span>
+        <img v-if="resultUrl" :src="resultUrl" :alt="t('compare.editAlt')" :class="{ dim: converting }" />
+        <span v-else-if="converting">{{ t('compare.processing') }}</span>
+        <span v-else>{{ t('compare.result') }}</span>
       </div>
     </section>
     <TransformParamPanel

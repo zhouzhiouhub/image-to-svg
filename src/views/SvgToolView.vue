@@ -9,6 +9,7 @@ import CompareView from '@/components/CompareView.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { useTrace } from '@/composables/useTrace'
 import type { TraceOptions } from '@/types/trace'
+import { t } from '@/i18n'
 
 const route = useRoute()
 const traceMode = ref<'preserve' | 'vector'>(route.query.mode === 'vector' ? 'vector' : 'preserve')
@@ -27,7 +28,7 @@ const traceOptions = ref<TraceOptions>({
 const { trace } = useTrace()
 let traceSeq = 0
 
-const pipeline = computed(() => (traceMode.value === 'vector' ? '矢量描摹' : '原样封装'))
+const pipeline = computed(() => (traceMode.value === 'vector' ? t('pipeline.vector') : t('pipeline.preserve')))
 
 watch(source, (value, _prev, onCleanup) => {
   if (!value) {
@@ -68,7 +69,7 @@ watch([source, traceOptions], async () => {
   } catch (error) {
     if (seq !== traceSeq) return
     const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `转换失败：${detail}` : '转换失败，请换一张更小的静态图标后重试')
+    ElMessage.error(detail ? t('errors.convertDetail', { detail }) : t('errors.convert'))
   } finally {
     if (seq === traceSeq) converting.value = false
   }
@@ -104,7 +105,7 @@ function onTraceChange(options: TraceOptions) {
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
-      result-alt="SVG 结果"
+      :result-alt="t('compare.svgAlt')"
       :converting="converting"
     />
     <TraceParamPanel

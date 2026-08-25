@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import { t } from '@/i18n'
 </script>
 
 <template>
   <main class="not-found">
     <p class="code">404</p>
-    <h1>页面不存在</h1>
-    <p>没有这个地址。图片工具都在下面这几个页面，处理仍在浏览器本地完成。</p>
-    <nav class="links" aria-label="功能导航">
-      <RouterLink to="/">首页</RouterLink>
-      <RouterLink to="/svg">图片转 SVG</RouterLink>
-      <RouterLink to="/edit">调整画面</RouterLink>
-      <RouterLink to="/export">转格式 / 压缩</RouterLink>
+    <h1>{{ t('notFound.title') }}</h1>
+    <p>{{ t('notFound.body') }}</p>
+    <nav class="links" :aria-label="t('nav.tools')">
+      <RouterLink to="/">{{ t('notFound.home') }}</RouterLink>
+      <RouterLink to="/svg">{{ t('tools.svg.title') }}</RouterLink>
+      <RouterLink to="/edit">{{ t('tools.edit.title') }}</RouterLink>
+      <RouterLink to="/export">{{ t('tools.export.title') }}</RouterLink>
     </nav>
   </main>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
+import { t } from '@/i18n'
 
 defineProps<{
   disabled?: boolean
@@ -30,22 +31,22 @@ watch(
 
 <template>
   <section class="panel" :class="{ disabled }">
-    <h2>裁剪参数</h2>
-    <p v-if="disabled">请先上传图片后再框选裁剪</p>
+    <h2>{{ t('crop.title') }}</h2>
+    <p v-if="disabled">{{ t('crop.needFile') }}</p>
     <template v-else>
-      <p v-if="loading">正在裁剪…</p>
+      <p v-if="loading">{{ t('crop.loading') }}</p>
       <div class="row">
-        <span>比例</span>
+        <span>{{ t('crop.ratio') }}</span>
         <el-radio-group v-model="form.aspect" size="small">
-          <el-radio-button value="free">自由</el-radio-button>
+          <el-radio-button value="free">{{ t('crop.free') }}</el-radio-button>
           <el-radio-button value="1">1:1</el-radio-button>
           <el-radio-button value="4-3">4:3</el-radio-button>
           <el-radio-button value="16-9">16:9</el-radio-button>
         </el-radio-group>
       </div>
-      <p v-if="cropWidth && cropHeight" class="hint">选区 {{ cropWidth }} × {{ cropHeight }}</p>
-      <el-button size="small" @click="emit('reset')">重置选区</el-button>
-      <p class="hint">在左侧原图上拖拽框选，可拖动选框或四角调整。</p>
+      <p v-if="cropWidth && cropHeight" class="hint">{{ t('crop.selection', { w: cropWidth, h: cropHeight }) }}</p>
+      <el-button size="small" @click="emit('reset')">{{ t('crop.reset') }}</el-button>
+      <p class="hint">{{ t('crop.hint') }}</p>
     </template>
   </section>
 </template>

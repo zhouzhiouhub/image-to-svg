@@ -17,5 +17,5 @@
     "noUncheckedSideEffectImports": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "src/seoPages.ts"]
+  "include": ["vite.config.ts", "src/seoPages.ts", "src/i18n/messages.ts", "src/i18n/zh.ts", "src/i18n/en.ts"]
 }

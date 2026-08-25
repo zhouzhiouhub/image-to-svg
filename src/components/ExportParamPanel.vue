@@ -3,6 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import type { CompressMode } from '@/utils/compressImage'
 import type { RasterFormat, RasterOptions } from '@/utils/svgRaster'
 import { isOpaqueRasterSource } from '@/utils/knockoutWhite'
+import { t } from '@/i18n'
 
 export type ExportTarget = 'keep' | RasterFormat
 
@@ -61,28 +62,28 @@ watch(
 
 <template>
   <section class="panel" :class="{ disabled }">
-    <h2>导出参数</h2>
-    <p v-if="disabled">请先上传图片后再选择格式或压缩</p>
+    <h2>{{ t('exportPanel.title') }}</h2>
+    <p v-if="disabled">{{ t('exportPanel.needFile') }}</p>
     <template v-else>
-      <p v-if="loading">正在处理…</p>
+      <p v-if="loading">{{ t('exportPanel.loading') }}</p>
       <div class="row">
-        <span>格式</span>
+        <span>{{ t('exportPanel.format') }}</span>
         <el-radio-group v-model="form.target" size="small">
-          <el-radio-button value="keep">原格式</el-radio-button>
+          <el-radio-button value="keep">{{ t('exportPanel.keep') }}</el-radio-button>
           <el-radio-button value="image/png">PNG</el-radio-button>
           <el-radio-button value="image/jpeg">JPEG</el-radio-button>
           <el-radio-button value="image/webp">WebP</el-radio-button>
         </el-radio-group>
       </div>
       <div class="row">
-        <span>策略</span>
+        <span>{{ t('exportPanel.strategy') }}</span>
         <el-radio-group v-model="form.strategy" size="small">
-          <el-radio-button value="quality">保画质</el-radio-button>
-          <el-radio-button value="smaller">更小体积</el-radio-button>
+          <el-radio-button value="quality">{{ t('exportPanel.quality') }}</el-radio-button>
+          <el-radio-button value="smaller">{{ t('exportPanel.smaller') }}</el-radio-button>
         </el-radio-group>
       </div>
       <div v-if="showScale" class="row">
-        <span>倍率</span>
+        <span>{{ t('exportPanel.scale') }}</span>
         <el-radio-group v-model="form.scale" size="small">
           <el-radio-button :value="1">1×</el-radio-button>
           <el-radio-button :value="2">2×</el-radio-button>
@@ -90,7 +91,7 @@ watch(
         </el-radio-group>
       </div>
       <div v-if="showQuality" class="row">
-        <span>质量</span>
+        <span>{{ t('exportPanel.qualityLabel') }}</span>
         <el-slider
           v-model="form.quality"
           :min="form.strategy === 'smaller' ? 0.5 : 0.1"
@@ -99,17 +100,17 @@ watch(
         />
       </div>
       <div v-if="form.target !== 'keep' && !jpegLocked" class="row">
-        <span>背景</span>
+        <span>{{ t('exportPanel.background') }}</span>
         <el-radio-group v-model="form.background" size="small">
-          <el-radio-button value="transparent">透明</el-radio-button>
-          <el-radio-button value="white">白色</el-radio-button>
+          <el-radio-button value="transparent">{{ t('exportPanel.transparent') }}</el-radio-button>
+          <el-radio-button value="white">{{ t('exportPanel.white') }}</el-radio-button>
         </el-radio-group>
       </div>
-      <p v-if="knockoutWhite" class="hint">会把图片边缘的白底抠成透明。</p>
+      <p v-if="knockoutWhite" class="hint">{{ t('exportPanel.knockout') }}</p>
       <p v-else-if="form.target === 'keep'" class="hint">
-        {{ form.strategy === 'quality' ? '按原格式高质量重编码；若体积没有变小，会保留原文件。' : '降低质量以换取更小文件，仍导出为原格式。' }}
+        {{ form.strategy === 'quality' ? t('exportPanel.keepQuality') : t('exportPanel.keepSmaller') }}
       </p>
-      <p v-else class="hint">按所选格式重新编码。可一次处理多张并打包 zip。</p>
+      <p v-else class="hint">{{ t('exportPanel.convertHint') }}</p>
     </template>
   </section>
 </template>

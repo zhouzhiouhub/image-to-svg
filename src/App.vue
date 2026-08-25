@@ -1,16 +1,22 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HistoryList from '@/components/HistoryList.vue'
+import { GITHUB_URL, t, useI18n } from '@/i18n'
+import { applyRouteSeo } from '@/seo'
 
 const route = useRoute()
+const { locale, setLocale } = useI18n()
 const isHome = computed(() => route.name === 'home')
 const showHeading = computed(() => route.name === 'svg' || route.name === 'edit' || route.name === 'export')
-const pageTitle = computed(() => (typeof route.meta.title === 'string' ? route.meta.title : ''))
-const pageDescription = computed(() =>
-  showHeading.value && typeof route.meta.description === 'string' ? route.meta.description : '',
-)
+const pageKey = computed(() => (typeof route.name === 'string' ? route.name : 'notFound'))
+const pageTitle = computed(() => (showHeading.value ? t(`seo.${pageKey.value}.title`) : ''))
+const pageDescription = computed(() => (showHeading.value ? t(`seo.${pageKey.value}.description`) : ''))
 const favicon = `${import.meta.env.BASE_URL}favicon.svg`
+
+watch([locale, () => route.fullPath], () => {
+  applyRouteSeo(route)
+})
 </script>
 
 <template>
@@ -20,10 +26,20 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
         <img :src="favicon" alt="Kinolin Tool" width="28" height="28" />
         <span>Kinolin Tool</span>
       </RouterLink>
-      <nav v-if="!isHome" class="nav">
-        <h1 v-if="showHeading" class="page-title">{{ pageTitle }}</h1>
-        <RouterLink class="home-link" to="/">返回首页</RouterLink>
-      </nav>
+      <div class="header-end">
+        <nav v-if="!isHome" class="nav">
+          <h1 v-if="showHeading" class="page-title">{{ pageTitle }}</h1>
+          <RouterLink class="home-link" to="/">{{ t('nav.home') }}</RouterLink>
+        </nav>
+        <div class="lang" role="group" :aria-label="t('lang.label')">
+          <button type="button" :aria-pressed="locale === 'zh'" @click="setLocale('zh')">
+            {{ t('lang.zh') }}
+          </button>
+          <button type="button" :aria-pressed="locale === 'en'" @click="setLocale('en')">
+            {{ t('lang.en') }}
+          </button>
+        </div>
+      </div>
     </header>
     <div class="app-body">
       <p v-if="pageDescription" class="page-lead">{{ pageDescription }}</p>
@@ -32,12 +48,11 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
     </div>
     <footer class="app-footer">
       <div class="footer-inner">
-        <nav v-if="!isHome" class="footer-nav" aria-label="功能导航">
-          <RouterLink to="/svg">图片转 SVG</RouterLink>
-          <RouterLink to="/edit">调整画面</RouterLink>
-          <RouterLink to="/export">转格式 / 压缩</RouterLink>
+        <nav class="footer-nav" :aria-label="t('nav.tools')">
+          <RouterLink to="/privacy">{{ t('footer.privacy') }}</RouterLink>
+          <a :href="GITHUB_URL" target="_blank" rel="noopener noreferrer">{{ t('footer.github') }}</a>
         </nav>
-        <p>图片仅在浏览器本地处理，不上传服务器。</p>
+        <p>{{ t('footer.note') }}</p>
       </div>
     </footer>
   </div>
@@ -89,6 +104,12 @@ body {
   display: block;
 }
 
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -119,6 +140,28 @@ body {
 
 .home-link:hover {
   text-decoration: underline;
+}
+
+.lang {
+  display: flex;
+  gap: 4px;
+}
+
+.lang button {
+  margin: 0;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #909399;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.lang button[aria-pressed='true'] {
+  background: #ecf5ff;
+  color: #409eff;
 }
 
 .app-footer {

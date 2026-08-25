@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import type { UploadFile, UploadFiles } from 'element-plus'
 import { useFileValidate } from '@/composables/useFileValidate'
 import { usePaste } from '@/composables/usePaste'
+import { t } from '@/i18n'
 import {
   ACCEPT_ATTR,
   ACCEPT_RASTER_ATTR,
@@ -42,10 +43,10 @@ const accept = computed(() => {
 })
 
 const hint = computed(() => {
-  if (props.multiple) return `可一次拖入多张，最多 ${limit.value} 张 · PNG / JPG / WebP / BMP / GIF / SVG`
-  if (props.acceptKind === 'raster') return '支持 Ctrl+V 粘贴 · PNG / JPG / WebP / BMP / GIF'
-  if (props.acceptKind === 'svg') return '支持 Ctrl+V 粘贴 SVG 代码 · SVG 文件'
-  return '支持 Ctrl+V 粘贴 · PNG / JPG / WebP / BMP / GIF / SVG'
+  if (props.multiple) return t('upload.hintMany', { n: limit.value })
+  if (props.acceptKind === 'raster') return t('upload.hintRaster')
+  if (props.acceptKind === 'svg') return t('upload.hintSvg')
+  return t('upload.hint')
 })
 
 async function validateOne(file: File, notify: boolean): Promise<AcceptedFile | null> {
@@ -73,13 +74,13 @@ async function acceptMany(files: File[]) {
     else skipped += 1
   }
   if (unique.length > limit.value) {
-    ElMessage.warning(`一次最多 ${limit.value} 张，已截取前 ${limit.value} 张`)
+    ElMessage.warning(t('upload.maxSlice', { n: limit.value }))
   }
   if (!accepted.length) {
-    if (!notify) ElMessage.error('没有可处理的图片')
+    if (!notify) ElMessage.error(t('upload.none'))
     return
   }
-  if (skipped) ElMessage.warning(`已跳过 ${skipped} 个不支持的文件`)
+  if (skipped) ElMessage.warning(t('upload.skipped', { n: skipped }))
   if (props.multiple) emit('acceptedMany', accepted)
   else emit('accepted', accepted[0])
   uploadRef.value?.clearFiles()
@@ -93,7 +94,7 @@ function onChange(uploadFile: UploadFile, files: UploadFiles) {
   if (!props.multiple) {
     const raw = uploadFile.raw
     if (!raw) return
-    if (files.length > 1) ElMessage.warning('当前仅处理第一个文件')
+    if (files.length > 1) ElMessage.warning(t('upload.firstOnly'))
     void acceptFile(raw)
     return
   }
@@ -108,7 +109,7 @@ function onChange(uploadFile: UploadFile, files: UploadFiles) {
 }
 
 function onExceed() {
-  ElMessage.warning(props.multiple ? `一次最多 ${limit.value} 张` : '当前仅处理第一个文件')
+  ElMessage.warning(props.multiple ? t('upload.maxOnly', { n: limit.value }) : t('upload.firstOnly'))
 }
 
 usePaste((file) => {
@@ -132,7 +133,7 @@ defineExpose({ acceptFile })
     :on-change="onChange"
     :on-exceed="onExceed"
   >
-    <p class="title">{{ multiple ? '拖拽多张图片到此处，或点击选择文件' : '拖拽图片到此处，或点击选择文件' }}</p>
+    <p class="title">{{ multiple ? t('upload.titleMany') : t('upload.title') }}</p>
     <p class="hint">{{ hint }}</p>
   </el-upload>
 </template>
