@@ -1,6 +1,7 @@
 import { ogLocale, translate, type Locale } from './i18n/messages'
 
 export const SITE_NAME = 'Kinolin Tool'
+export const DEFAULT_SITE_URL = 'https://tool.kinolin.com'
 
 export type SeoPage = {
   path: string
@@ -19,9 +20,9 @@ export const seoPages: Record<string, SeoPage> = {
 export const INDEXABLE_ROUTE_NAMES = ['home', 'svg', 'edit', 'export', 'privacy'] as const
 
 export function canonicalUrl(path: string, origin: string) {
-  const base = origin.replace(/\/$/, '')
+  const base = (origin || DEFAULT_SITE_URL).replace(/\/$/, '')
   const normalized = path === '/' ? '/' : path
-  return base ? `${base}${normalized}` : normalized
+  return `${base}${normalized}`
 }
 
 export function seoSnapshot(routeName: string, origin: string, locale: Locale = 'zh') {

@@ -1,8 +1,9 @@
 import type { RouteLocationNormalized } from 'vue-router'
 import { currentLocale, htmlLang } from './i18n'
-import { SITE_NAME, seoSnapshot } from './seoPages'
+import { DEFAULT_SITE_URL, SITE_NAME, seoSnapshot } from './seoPages'
 
 export {
+  DEFAULT_SITE_URL,
   SITE_NAME,
   seoPages,
   INDEXABLE_ROUTE_NAMES,
@@ -15,7 +16,7 @@ function siteOrigin() {
   const fromEnv = import.meta.env.VITE_SITE_URL?.replace(/\/$/, '')
   if (fromEnv) return fromEnv
   if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin
-  return ''
+  return DEFAULT_SITE_URL
 }
 
 function upsertMeta(selector: string, attrs: Record<string, string>) {

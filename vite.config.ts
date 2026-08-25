@@ -1,20 +1,19 @@
 import { fileURLToPath, URL } from 'node:url'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import wasm from 'vite-plugin-wasm'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
-import { htmlWithRouteSeo, INDEXABLE_ROUTE_NAMES, seoPages } from './src/seoPages.ts'
+import { DEFAULT_SITE_URL, htmlWithRouteSeo, INDEXABLE_ROUTE_NAMES, seoPages } from './src/seoPages.ts'
 
-const SITE_URL = (process.env.VITE_SITE_URL ?? '').replace(/\/$/, '')
-
-function seoFilesPlugin(): Plugin {
+function seoFilesPlugin(siteUrl: string): Plugin {
   return {
     name: 'kinolin-seo-files',
     closeBundle() {
+      const SITE_URL = siteUrl.replace(/\/$/, '')
       const dist = resolve(fileURLToPath(new URL('./dist', import.meta.url)))
       const indexPath = resolve(dist, 'index.html')
       const html = readFileSync(indexPath, 'utf8')
@@ -46,33 +45,41 @@ function seoFilesPlugin(): Plugin {
   }
 }
 
-export default defineConfig({
-  base: process.env.VITE_BASE ?? '/',
-  plugins: [
-    vue(),
-    wasm(),
-    AutoImport({
-      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
-    }),
-    seoFilesPlugin(),
-  ],
-  resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
-  },
-  assetsInclude: ['**/*.wasm'],
-  worker: {
-    format: 'es',
-    plugins: () => [wasm()],
-  },
-  build: {
-    target: 'es2022',
-    assetsInlineLimit: 0,
-    sourcemap: false,
-    outDir: 'dist',
-    emptyOutDir: true,
-    modulePreload: { polyfill: false },
-  },
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  const SITE_URL = (env.VITE_SITE_URL || process.env.VITE_SITE_URL || DEFAULT_SITE_URL).replace(
+    /\/$/,
+    '',
+  )
+
+  return {
+    base: env.VITE_BASE || process.env.VITE_BASE || '/',
+    plugins: [
+      vue(),
+      wasm(),
+      AutoImport({
+        resolvers: [ElementPlusResolver({ importStyle: 'css' })],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver({ importStyle: 'css' })],
+      }),
+      seoFilesPlugin(SITE_URL),
+    ],
+    resolve: {
+      alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    },
+    assetsInclude: ['**/*.wasm'],
+    worker: {
+      format: 'es',
+      plugins: () => [wasm()],
+    },
+    build: {
+      target: 'es2022',
+      assetsInlineLimit: 0,
+      sourcemap: false,
+      outDir: 'dist',
+      emptyOutDir: true,
+      modulePreload: { polyfill: false },
+    },
+  }
 })
