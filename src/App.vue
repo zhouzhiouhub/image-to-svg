@@ -13,7 +13,7 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
     <header class="app-header">
       <RouterLink class="brand" to="/">
         <img :src="favicon" alt="" width="28" height="28" />
-        <span>图片工具</span>
+        <span>Kinolin Tool</span>
       </RouterLink>
       <nav v-if="!isHome" class="nav">
         <span class="page-title">{{ pageTitle }}</span>
