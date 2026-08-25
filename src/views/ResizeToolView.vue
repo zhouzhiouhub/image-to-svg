@@ -122,25 +122,21 @@ function onResizeChange(options: ResizeOptions) {
 
 <template>
   <main class="tool">
-    <section class="setup">
-      <UploadPanel @accepted="onAccepted" />
-      <aside class="params">
-        <ResizeParamPanel
-          :disabled="!source"
-          :loading="converting"
-          :source-width="source?.width"
-          :source-height="source?.height"
-          :source-format="source?.format"
-          @change="onResizeChange"
-        />
-      </aside>
-    </section>
+    <UploadPanel @accepted="onAccepted" />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
       result-alt="调整结果"
       :converting="converting"
+    />
+    <ResizeParamPanel
+      :disabled="!source"
+      :loading="converting"
+      :source-width="source?.width"
+      :source-height="source?.height"
+      :source-format="source?.format"
+      @change="onResizeChange"
     />
     <ResultBar
       :source="source"
@@ -163,25 +159,9 @@ function onResizeChange(options: ResizeOptions) {
   gap: 16px;
 }
 
-.setup {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 16px;
-}
-
-.params {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 @media (max-width: 767px) {
   .tool {
     padding: 16px;
-  }
-
-  .setup {
-    grid-template-columns: 1fr;
   }
 }
 </style>

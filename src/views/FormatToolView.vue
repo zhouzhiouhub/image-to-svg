@@ -130,26 +130,22 @@ function onRasterChange(options: RasterOptions) {
 
 <template>
   <main class="tool">
-    <section class="setup">
-      <UploadPanel @accepted="onAccepted" />
-      <aside class="params">
-        <RasterParamPanel
-          title="转换参数"
-          empty-text="请先上传图片后再选择导出格式"
-          loading-text="正在转换…"
-          :initial-scale="1"
-          :disabled="!source"
-          :loading="converting"
-          @change="onRasterChange"
-        />
-      </aside>
-    </section>
+    <UploadPanel @accepted="onAccepted" />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
       result-alt="转换结果"
       :converting="converting"
+    />
+    <RasterParamPanel
+      title="转换参数"
+      empty-text="请先上传图片后再选择导出格式"
+      loading-text="正在转换…"
+      :initial-scale="1"
+      :disabled="!source"
+      :loading="converting"
+      @change="onRasterChange"
     />
     <ResultBar
       :source="source"
@@ -172,25 +168,9 @@ function onRasterChange(options: RasterOptions) {
   gap: 16px;
 }
 
-.setup {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 16px;
-}
-
-.params {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 @media (max-width: 767px) {
   .tool {
     padding: 16px;
-  }
-
-  .setup {
-    grid-template-columns: 1fr;
   }
 }
 </style>

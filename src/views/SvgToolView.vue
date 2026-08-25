@@ -86,27 +86,23 @@ function onTraceChange(options: TraceOptions) {
 
 <template>
   <main class="tool">
-    <section class="setup">
-      <UploadPanel
-        accept-kind="raster"
-        :photo-warning="tool === 'vector'"
-        @accepted="onAccepted"
-      />
-      <aside class="params">
-        <TraceParamPanel
-          :mode="traceMode"
-          :disabled="!source"
-          :loading="converting"
-          @change="onTraceChange"
-        />
-      </aside>
-    </section>
+    <UploadPanel
+      accept-kind="raster"
+      :photo-warning="tool === 'vector'"
+      @accepted="onAccepted"
+    />
     <CompareView
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
       result-alt="SVG 结果"
       :converting="converting"
+    />
+    <TraceParamPanel
+      :mode="traceMode"
+      :disabled="!source"
+      :loading="converting"
+      @change="onTraceChange"
     />
     <ResultBar :source="source" :svg="resultSvg" />
   </main>
@@ -122,25 +118,9 @@ function onTraceChange(options: TraceOptions) {
   gap: 16px;
 }
 
-.setup {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 16px;
-}
-
-.params {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 @media (max-width: 767px) {
   .tool {
     padding: 16px;
-  }
-
-  .setup {
-    grid-template-columns: 1fr;
   }
 }
 </style>
