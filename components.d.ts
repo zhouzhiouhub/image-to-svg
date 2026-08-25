@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CompareView: typeof import('./src/components/CompareView.vue')['default']
+    CompressParamPanel: typeof import('./src/components/CompressParamPanel.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']

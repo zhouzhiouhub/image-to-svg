@@ -57,6 +57,14 @@ export const toolGroups: ToolGroup[] = [
         status: 'available',
         statusLabel: '可用',
       },
+      {
+        id: 'compress',
+        to: '/compress',
+        title: '图片压缩',
+        description: '在浏览器本地压缩图片，默认尽量保留画质；压完更大则保留原文件。',
+        status: 'available',
+        statusLabel: '可用',
+      },
     ],
   },
 ]

@@ -3,6 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import SvgToolView from '@/views/SvgToolView.vue'
 import FormatToolView from '@/views/FormatToolView.vue'
 import ResizeToolView from '@/views/ResizeToolView.vue'
+import CompressToolView from '@/views/CompressToolView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +45,12 @@ const router = createRouter({
       name: 'resize',
       component: ResizeToolView,
       meta: { title: '图片尺寸调整' },
+    },
+    {
+      path: '/compress',
+      name: 'compress',
+      component: CompressToolView,
+      meta: { title: '图片压缩' },
     },
     {
       path: '/app',

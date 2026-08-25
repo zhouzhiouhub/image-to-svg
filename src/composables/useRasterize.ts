@@ -6,6 +6,7 @@ import {
   type RasterizeResult,
   type ResizeOptions,
 } from '@/utils/svgRaster'
+import { compressInput, type CompressOptions, type CompressResult } from '@/utils/compressImage'
 import type { InputKind } from '@/types/input'
 
 export function useRasterize() {
@@ -29,5 +30,14 @@ export function useRasterize() {
     return rasterizeToSize(file, kind, options)
   }
 
-  return { rasterize, rasterizeFile, resizeFile }
+  async function compressFile(
+    file: File,
+    kind: InputKind,
+    sourceFormat: string,
+    options: CompressOptions,
+  ): Promise<CompressResult> {
+    return compressInput(file, kind, sourceFormat, options)
+  }
+
+  return { rasterize, rasterizeFile, resizeFile, compressFile }
 }

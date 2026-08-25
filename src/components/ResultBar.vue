@@ -13,6 +13,7 @@ const props = defineProps<{
   rasterType?: RasterFormat
   resultWidth?: number
   resultHeight?: number
+  keptOriginal?: boolean
 }>()
 
 const pathCount = computed(() => props.svg?.match(/<path\b/gi)?.length ?? 0)
@@ -23,6 +24,10 @@ const larger = computed(() => {
   if (props.svg) return svgBytes.value > props.source.file.size
   if (props.rasterBlob) return rasterBytes.value > props.source.file.size
   return false
+})
+const savedPercent = computed(() => {
+  if (!props.source || !props.rasterBlob || props.rasterBlob.size >= props.source.file.size) return 0
+  return Math.round((1 - props.rasterBlob.size / props.source.file.size) * 100)
 })
 const pipelineLabel = computed(() => {
   if (props.pipeline) return props.pipeline
@@ -68,6 +73,10 @@ function downloadSvg() {
 
 function downloadRaster() {
   if (!props.rasterBlob) return
+  if (props.keptOriginal && props.source) {
+    download(props.rasterBlob, props.source.file.name)
+    return
+  }
   download(props.rasterBlob, `${fileStem()}.${rasterExt()}`)
 }
 </script>
@@ -86,10 +95,12 @@ function downloadRaster() {
         <el-button size="small" @click="copySvg">复制代码</el-button>
       </template>
       <template v-else-if="rasterBlob">
-        <span :class="{ warn: larger }">结果 {{ formatBytes(rasterBytes) }}</span>
+        <span :class="{ warn: larger, ok: savedPercent > 0 }">结果 {{ formatBytes(rasterBytes) }}</span>
+        <span v-if="savedPercent > 0">减小 {{ savedPercent }}%</span>
+        <span v-else-if="keptOriginal">体积未减小</span>
         <span v-if="resultWidth && resultHeight">{{ resultWidth }} × {{ resultHeight }}</span>
         <el-button size="small" type="primary" @click="downloadRaster">
-          下载 {{ rasterExt().toUpperCase() }}
+          下载 {{ keptOriginal ? '原文件' : rasterExt().toUpperCase() }}
         </el-button>
       </template>
     </template>
@@ -112,5 +123,9 @@ function downloadRaster() {
 
 .warn {
   color: #e6a23c;
+}
+
+.ok {
+  color: #67c23a;
 }
 </style>
