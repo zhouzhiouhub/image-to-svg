@@ -2,6 +2,7 @@
 import { ElMessage } from 'element-plus'
 import type { UploadFile, UploadFiles } from 'element-plus'
 import { useFileValidate } from '@/composables/useFileValidate'
+import { usePaste } from '@/composables/usePaste'
 import { ACCEPT_ATTR, type ValidateSuccess } from '@/types/input'
 
 export type AcceptedFile = ValidateSuccess & { file: File }
@@ -35,6 +36,10 @@ function onChange(uploadFile: UploadFile, files: UploadFiles) {
 function onExceed() {
   ElMessage.warning('当前仅处理第一个文件')
 }
+
+usePaste((file) => {
+  void acceptFile(file)
+})
 
 defineExpose({ acceptFile })
 </script>
