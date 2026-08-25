@@ -1,6 +1,8 @@
+import { svgToBlob, type RasterOptions } from '@/utils/svgRaster'
+
 export function useRasterize() {
-  async function rasterize(): Promise<Blob> {
-    throw new Error('Not implemented')
+  async function rasterize(svgText: string, options: RasterOptions): Promise<Blob> {
+    return svgToBlob(svgText, options)
   }
 
   return { rasterize }
