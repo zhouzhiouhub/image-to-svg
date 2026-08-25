@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
+import { recordHistory } from '@/composables/useSessionHistory'
 import { formatBytes } from '@/utils/format'
 import type { RasterFormat } from '@/utils/svgRaster'
 
@@ -19,6 +21,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   replace: []
 }>()
+
+const route = useRoute()
+let historyTimer: ReturnType<typeof setTimeout> | null = null
 
 const pathCount = computed(() => props.svg?.match(/<path\b/gi)?.length ?? 0)
 const svgBytes = computed(() => (props.svg ? new Blob([props.svg]).size : 0))
@@ -83,6 +88,31 @@ function downloadRaster() {
   }
   download(props.rasterBlob, `${fileStem()}.${rasterExt()}`)
 }
+
+watch(
+  () => [props.source, props.svg, props.rasterBlob, props.rasterType, props.pipeline, props.keptOriginal] as const,
+  () => {
+    if (historyTimer) clearTimeout(historyTimer)
+    if (!props.source || (!props.svg && !props.rasterBlob)) return
+    historyTimer = setTimeout(() => {
+      if (!props.source || (!props.svg && !props.rasterBlob)) return
+      recordHistory({
+        groupKey: `${String(route.name)}:${props.source.file.name}:${props.source.file.size}`,
+        title: typeof route.meta.title === 'string' ? route.meta.title : '处理结果',
+        pipeline: props.pipeline ?? '',
+        sourceName: props.source.file.name,
+        svg: props.svg ?? undefined,
+        rasterBlob: props.rasterBlob ?? undefined,
+        rasterType: props.rasterType,
+        keptOriginal: props.keptOriginal,
+      })
+    }, 500)
+  },
+)
+
+onUnmounted(() => {
+  if (historyTimer) clearTimeout(historyTimer)
+})
 </script>
 
 <template>

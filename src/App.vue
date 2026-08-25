@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import HistoryList from '@/components/HistoryList.vue'
 
 const route = useRoute()
 const isHome = computed(() => route.name === 'home')
@@ -21,6 +22,7 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
       </nav>
     </header>
     <RouterView :key="route.fullPath" />
+    <HistoryList />
   </div>
 </template>
 
