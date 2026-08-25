@@ -1,10 +1,13 @@
 <script setup lang="ts">
+defineProps<{
+  disabled?: boolean
+}>()
 </script>
 
 <template>
-  <section class="panel">
+  <section class="panel" :class="{ disabled }">
     <h2>转换参数</h2>
-    <p>位图描摹参数（待接入）</p>
+    <p>{{ disabled ? '请先上传位图后再调节描摹参数' : '位图描摹参数（待接入）' }}</p>
   </section>
 </template>
 
@@ -13,6 +16,11 @@
   padding: 16px;
   background: #fff;
   border-radius: 8px;
+}
+
+.panel.disabled {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 h2 {

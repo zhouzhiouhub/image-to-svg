@@ -1,11 +1,36 @@
 <script setup lang="ts">
+import { computed, onUnmounted, ref, watch } from 'vue'
 import UploadPanel from '@/components/UploadPanel.vue'
+import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import TraceParamPanel from '@/components/TraceParamPanel.vue'
 import RasterParamPanel from '@/components/RasterParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
 import ResultBar from '@/components/ResultBar.vue'
 
 const title = import.meta.env.VITE_APP_TITLE ?? '图片转SVG工具'
+const source = ref<AcceptedFile | null>(null)
+const previewUrl = ref<string | null>(null)
+
+const showTrace = computed(() => !source.value || source.value.kind === 'raster')
+const showRaster = computed(() => !source.value || source.value.kind === 'svg')
+
+watch(source, (value, _prev, onCleanup) => {
+  if (!value) {
+    previewUrl.value = null
+    return
+  }
+  const url = URL.createObjectURL(value.file)
+  previewUrl.value = url
+  onCleanup(() => URL.revokeObjectURL(url))
+})
+
+onUnmounted(() => {
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+})
+
+function onAccepted(payload: AcceptedFile) {
+  source.value = payload
+}
 </script>
 
 <template>
@@ -15,14 +40,14 @@ const title = import.meta.env.VITE_APP_TITLE ?? '图片转SVG工具'
     </header>
     <main class="app-main">
       <section class="app-setup">
-        <UploadPanel />
+        <UploadPanel @accepted="onAccepted" />
         <aside class="app-params">
-          <TraceParamPanel />
-          <RasterParamPanel />
+          <TraceParamPanel v-if="showTrace" :disabled="!source" />
+          <RasterParamPanel v-if="showRaster" :disabled="!source" />
         </aside>
       </section>
-      <CompareView />
-      <ResultBar />
+      <CompareView :original-url="previewUrl" :original-name="source?.file.name" />
+      <ResultBar :source="source" />
     </main>
   </div>
 </template>
