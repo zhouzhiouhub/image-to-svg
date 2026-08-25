@@ -42,14 +42,6 @@ export const toolGroups: ToolGroup[] = [
     title: '其他工具',
     tools: [
       {
-        id: 'export',
-        to: '/svg/export',
-        title: 'SVG 转位图',
-        description: '把 SVG 导出为 PNG、JPEG 或 WebP，可调倍率、质量和背景。',
-        status: 'available',
-        statusLabel: '可用',
-      },
-      {
         id: 'format',
         to: '/format',
         title: '图片格式转换',

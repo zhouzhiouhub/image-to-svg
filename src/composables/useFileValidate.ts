@@ -45,7 +45,7 @@ export function useFileValidate() {
 
     if (format === 'svg') {
       if (options.expect === 'raster') {
-        return { ok: false, message: '当前功能只处理位图。导出 SVG 请改用「SVG 转位图」' }
+        return { ok: false, message: '当前功能只处理位图。转换格式请改用「图片格式转换」' }
       }
 
       const svgText = new TextDecoder().decode(bytes)

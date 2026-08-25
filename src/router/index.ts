@@ -26,9 +26,7 @@ const router = createRouter({
     },
     {
       path: '/svg/export',
-      name: 'svg-export',
-      component: SvgToolView,
-      meta: { title: 'SVG 转位图', tool: 'export' },
+      redirect: '/format',
     },
     {
       path: '/svg',

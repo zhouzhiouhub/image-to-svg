@@ -5,6 +5,6 @@ declare module 'vue-router' {
     title?: string
     description?: string
     statusLabel?: string
-    tool?: 'preserve' | 'vector' | 'export'
+    tool?: 'preserve' | 'vector'
   }
 }
