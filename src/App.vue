@@ -199,7 +199,7 @@ body {
 }
 
 .home-link {
-  color: var(--app-accent);
+  color: var(--app-link);
   font-size: 14px;
   text-decoration: none;
 }
@@ -273,7 +273,7 @@ body {
 
 .footer-nav a:hover,
 .footer-nav a.router-link-active {
-  color: var(--app-accent);
+  color: var(--app-link);
 }
 
 @media (max-width: 767px) {

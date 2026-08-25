@@ -51,7 +51,7 @@ p {
 }
 
 .links a {
-  color: var(--app-accent);
+  color: var(--app-link);
   text-decoration: none;
 }
 

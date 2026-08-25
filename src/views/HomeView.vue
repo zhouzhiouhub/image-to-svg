@@ -20,7 +20,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
       <div class="grid">
         <RouterLink v-for="tool in homeTools" :key="tool.id" class="card" :to="tool.to">
           <div class="card-top">
-            <h3>{{ t(`tools.${tool.id}.title`) }}</h3>
+            <h2>{{ t(`tools.${tool.id}.title`) }}</h2>
             <el-tag size="small" :type="tagType[tool.status]">{{ t('tools.available') }}</el-tag>
           </div>
           <p>{{ t(`tools.${tool.id}.description`) }}</p>
@@ -99,7 +99,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   gap: 12px;
 }
 
-.card h3 {
+.card h2 {
   margin: 0;
   font-size: 17px;
   font-weight: 600;
@@ -115,7 +115,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 
 .action {
   font-size: 13px;
-  color: var(--app-accent);
+  color: var(--app-link);
 }
 
 @media (max-width: 767px) {
