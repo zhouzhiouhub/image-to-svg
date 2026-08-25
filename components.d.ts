@@ -12,6 +12,12 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CompareView: typeof import('./src/components/CompareView.vue')['default']
+    ElButton: typeof import('element-plus/es')['ElButton']
+    ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
+    ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
+    ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     HistoryList: typeof import('./src/components/HistoryList.vue')['default']
     RasterParamPanel: typeof import('./src/components/RasterParamPanel.vue')['default']
     ResultBar: typeof import('./src/components/ResultBar.vue')['default']
