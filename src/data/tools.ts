@@ -65,6 +65,14 @@ export const toolGroups: ToolGroup[] = [
         status: 'available',
         statusLabel: '可用',
       },
+      {
+        id: 'rotate',
+        to: '/rotate',
+        title: '旋转与翻转',
+        description: '将图片向左或向右旋转 90°，或水平、垂直翻转后导出。',
+        status: 'available',
+        statusLabel: '可用',
+      },
     ],
   },
 ]
