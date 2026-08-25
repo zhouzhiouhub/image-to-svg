@@ -65,21 +65,32 @@ watch([locale, () => route.fullPath], () => {
   background: #f5f7fa;
 }
 
+html,
+body,
+#app {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  overflow: hidden;
 }
 
 .app {
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .app-body {
   flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 .app-header {
+  flex-shrink: 0;
   height: 56px;
   display: flex;
   align-items: center;
@@ -88,6 +99,7 @@ body {
   padding: 0 24px;
   background: #fff;
   border-bottom: 1px solid #ebeef5;
+  z-index: 10;
 }
 
 .brand {
@@ -165,11 +177,12 @@ body {
 }
 
 .app-footer {
-  margin-top: auto;
+  flex-shrink: 0;
   border-top: 1px solid #ebeef5;
   background: #fff;
   color: #909399;
   font-size: 13px;
+  z-index: 10;
 }
 
 .footer-inner {
