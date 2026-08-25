@@ -20,7 +20,7 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
         <RouterLink class="home-link" to="/">返回首页</RouterLink>
       </nav>
     </header>
-    <RouterView />
+    <RouterView :key="route.fullPath" />
   </div>
 </template>
 

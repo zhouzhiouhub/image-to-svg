@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { tools, type ToolStatus } from '@/data/tools'
+import { toolGroups, type ToolStatus } from '@/data/tools'
 
 const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   available: 'success',
@@ -13,17 +13,23 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   <main class="home">
     <section class="hero">
       <h1>选择你要做的事</h1>
-      <p>图片在浏览器本地处理，不上传服务器。后续还会加入格式转换、尺寸调整，并提供可下载的应用。</p>
+      <p>图片在浏览器本地处理，不上传服务器。图片转 SVG 有两种做法，效果不同，请先选功能再上传。</p>
     </section>
-    <section class="grid">
-      <RouterLink v-for="tool in tools" :key="tool.id" class="card" :to="tool.to">
-        <div class="card-top">
-          <h2>{{ tool.title }}</h2>
-          <el-tag size="small" :type="tagType[tool.status]">{{ tool.statusLabel }}</el-tag>
-        </div>
-        <p>{{ tool.description }}</p>
-        <span class="action">{{ tool.status === 'available' ? '开始使用' : '查看计划' }}</span>
-      </RouterLink>
+    <section v-for="group in toolGroups" :key="group.title" class="group">
+      <header class="group-head">
+        <h2>{{ group.title }}</h2>
+        <p v-if="group.intro">{{ group.intro }}</p>
+      </header>
+      <div class="grid">
+        <RouterLink v-for="tool in group.tools" :key="tool.id" class="card" :to="tool.to">
+          <div class="card-top">
+            <h3>{{ tool.title }}</h3>
+            <el-tag size="small" :type="tagType[tool.status]">{{ tool.statusLabel }}</el-tag>
+          </div>
+          <p>{{ tool.description }}</p>
+          <span class="action">{{ tool.status === 'available' ? '开始使用' : '查看计划' }}</span>
+        </RouterLink>
+      </div>
     </section>
   </main>
 </template>
@@ -35,7 +41,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   padding: 40px 24px 64px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
 .hero h1 {
@@ -44,11 +50,24 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   font-weight: 600;
 }
 
-.hero p {
+.hero p,
+.group-head p {
   margin: 0;
   max-width: 640px;
   color: #606266;
   line-height: 1.6;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group-head h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .grid {
@@ -84,7 +103,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   gap: 12px;
 }
 
-.card h2 {
+.card h3 {
   margin: 0;
   font-size: 17px;
   font-weight: 600;

@@ -1,4 +1,4 @@
-import { MAX_EDGE_PX, MAX_FILE_BYTES, type ValidateResult } from '@/types/input'
+import { MAX_EDGE_PX, MAX_FILE_BYTES, type InputKind, type ValidateResult } from '@/types/input'
 import {
   isAnimatedGif,
   isAnimatedPng,
@@ -10,8 +10,13 @@ import {
 const UNSUPPORTED = '仅支持 PNG / JPG / WebP / BMP / 静态 GIF / SVG 图片'
 const ANIMATED = '动图暂不支持转换，仅支持静态图片'
 
+export type ValidateOptions = {
+  expect?: InputKind
+  photoWarning?: boolean
+}
+
 export function useFileValidate() {
-  async function validate(file: File): Promise<ValidateResult> {
+  async function validate(file: File, options: ValidateOptions = {}): Promise<ValidateResult> {
     if (!file.size) {
       return { ok: false, message: '未检测到可见内容' }
     }
@@ -39,6 +44,10 @@ export function useFileValidate() {
     }
 
     if (format === 'svg') {
+      if (options.expect === 'raster') {
+        return { ok: false, message: '当前功能只处理位图。导出 SVG 请改用「SVG 转位图」' }
+      }
+
       const svgText = new TextDecoder().decode(bytes)
       if (svgHasExternalResource(svgText)) {
         return { ok: false, message: '请使用内联资源的 SVG（图片请转 data URI）' }
@@ -48,8 +57,12 @@ export function useFileValidate() {
         ok: true,
         kind: 'svg',
         format,
-        info: '已检测到 SVG，将导出为 PNG / JPEG / WebP',
+        info: options.expect === 'svg' ? undefined : '已检测到 SVG，将导出为 PNG / JPEG / WebP',
       }
+    }
+
+    if (options.expect === 'svg') {
+      return { ok: false, message: '当前功能只处理 SVG。位图请改用「原样转 SVG」或「矢量描摹」' }
     }
 
     try {
@@ -62,8 +75,8 @@ export function useFileValidate() {
       }
 
       const warning =
-        format === 'jpeg' && Math.min(width, height) >= 800
-          ? '检测到照片类图片，转换效果可能不佳，建议使用小图标/Logo'
+        options.photoWarning && format === 'jpeg' && Math.min(width, height) >= 800
+          ? '检测到照片类图片，描摹效果可能不佳，建议使用小图标/Logo'
           : undefined
 
       return { ok: true, kind: 'raster', format, width, height, warning }

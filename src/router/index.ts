@@ -13,10 +13,26 @@ const router = createRouter({
       meta: { title: '图片工具' },
     },
     {
-      path: '/svg',
-      name: 'svg',
+      path: '/svg/preserve',
+      name: 'svg-preserve',
       component: SvgToolView,
-      meta: { title: '位图 ↔ SVG' },
+      meta: { title: '原样转 SVG', tool: 'preserve' },
+    },
+    {
+      path: '/svg/vector',
+      name: 'svg-vector',
+      component: SvgToolView,
+      meta: { title: '矢量描摹', tool: 'vector' },
+    },
+    {
+      path: '/svg/export',
+      name: 'svg-export',
+      component: SvgToolView,
+      meta: { title: 'SVG 转位图', tool: 'export' },
+    },
+    {
+      path: '/svg',
+      redirect: '/',
     },
     {
       path: '/format',

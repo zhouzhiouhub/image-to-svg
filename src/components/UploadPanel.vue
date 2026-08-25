@@ -1,11 +1,23 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile, UploadFiles } from 'element-plus'
 import { useFileValidate } from '@/composables/useFileValidate'
 import { usePaste } from '@/composables/usePaste'
-import { ACCEPT_ATTR, type ValidateSuccess } from '@/types/input'
+import {
+  ACCEPT_ATTR,
+  ACCEPT_RASTER_ATTR,
+  ACCEPT_SVG_ATTR,
+  type InputKind,
+  type ValidateSuccess,
+} from '@/types/input'
 
 export type AcceptedFile = ValidateSuccess & { file: File }
+
+const props = defineProps<{
+  acceptKind?: InputKind
+  photoWarning?: boolean
+}>()
 
 const emit = defineEmits<{
   accepted: [payload: AcceptedFile]
@@ -13,8 +25,23 @@ const emit = defineEmits<{
 
 const { validate } = useFileValidate()
 
+const accept = computed(() => {
+  if (props.acceptKind === 'raster') return ACCEPT_RASTER_ATTR
+  if (props.acceptKind === 'svg') return ACCEPT_SVG_ATTR
+  return ACCEPT_ATTR
+})
+
+const hint = computed(() => {
+  if (props.acceptKind === 'raster') return '支持 Ctrl+V 粘贴 · PNG / JPG / WebP / BMP / GIF'
+  if (props.acceptKind === 'svg') return '支持 Ctrl+V 粘贴 SVG 代码 · SVG 文件'
+  return '支持 Ctrl+V 粘贴 · PNG / JPG / WebP / BMP / GIF / SVG'
+})
+
 async function acceptFile(file: File) {
-  const result = await validate(file)
+  const result = await validate(file, {
+    expect: props.acceptKind,
+    photoWarning: props.photoWarning,
+  })
   if (!result.ok) {
     ElMessage.error(result.message)
     return
@@ -51,12 +78,12 @@ defineExpose({ acceptFile })
     :auto-upload="false"
     :show-file-list="false"
     :limit="1"
-    :accept="ACCEPT_ATTR"
+    :accept="accept"
     :on-change="onChange"
     :on-exceed="onExceed"
   >
     <p class="title">拖拽图片到此处，或点击选择文件</p>
-    <p class="hint">支持 Ctrl+V 粘贴 · PNG / JPG / WebP / BMP / GIF / SVG</p>
+    <p class="hint">{{ hint }}</p>
   </el-upload>
 </template>
 

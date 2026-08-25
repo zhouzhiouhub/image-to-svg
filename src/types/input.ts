@@ -12,6 +12,22 @@ export const ACCEPT_MIME = [
 
 export const ACCEPT_ATTR = [...ACCEPT_MIME, '.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', '.svg'].join(',')
 
+export const ACCEPT_RASTER_ATTR = [
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+  'image/bmp',
+  'image/gif',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.webp',
+  '.bmp',
+  '.gif',
+].join(',')
+
+export const ACCEPT_SVG_ATTR = ['image/svg+xml', '.svg'].join(',')
+
 export type InputKind = 'raster' | 'svg'
 export type SniffedFormat = 'png' | 'jpeg' | 'webp' | 'bmp' | 'gif' | 'svg'
 

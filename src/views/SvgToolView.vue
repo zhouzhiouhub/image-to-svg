@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
@@ -11,6 +12,12 @@ import { useTrace } from '@/composables/useTrace'
 import { useRasterize } from '@/composables/useRasterize'
 import type { TraceOptions } from '@/types/trace'
 import type { RasterOptions } from '@/utils/svgRaster'
+import type { InputKind } from '@/types/input'
+
+const route = useRoute()
+const tool = computed(() => route.meta.tool ?? 'preserve')
+const acceptKind = computed<InputKind>(() => (tool.value === 'export' ? 'svg' : 'raster'))
+const traceMode = computed(() => (tool.value === 'vector' ? 'vector' : 'preserve'))
 
 const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
@@ -34,8 +41,8 @@ const { rasterize } = useRasterize()
 let traceSeq = 0
 let rasterSeq = 0
 
-const showTrace = computed(() => !source.value || source.value.kind === 'raster')
-const showRaster = computed(() => !source.value || source.value.kind === 'svg')
+const showTrace = computed(() => tool.value !== 'export')
+const showRaster = computed(() => tool.value === 'export')
 
 watch(source, (value, _prev, onCleanup) => {
   if (!value) {
@@ -63,18 +70,18 @@ watch([resultSvg, resultBlob], ([svg, blob], _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch([source, traceOptions], async () => {
+watch([source, traceOptions, tool], async () => {
   const value = source.value
   const seq = ++traceSeq
   resultSvg.value = null
   resultBlob.value = null
-  if (!value || value.kind !== 'raster') return
+  if (!value || value.kind !== 'raster' || tool.value === 'export') return
 
   converting.value = true
   await nextTick()
   if (seq !== traceSeq) return
   try {
-    const svg = await trace(value.file, traceOptions.value)
+    const svg = await trace(value.file, { ...traceOptions.value, mode: traceMode.value })
     if (seq !== traceSeq) return
     resultSvg.value = svg
   } catch (error) {
@@ -86,10 +93,10 @@ watch([source, traceOptions], async () => {
   }
 })
 
-watch([source, rasterOptions], async () => {
+watch([source, rasterOptions, tool], async () => {
   const value = source.value
   const seq = ++rasterSeq
-  if (!value || value.kind !== 'svg') return
+  if (!value || value.kind !== 'svg' || tool.value !== 'export') return
 
   converting.value = true
   resultBlob.value = null
@@ -114,18 +121,27 @@ onUnmounted(() => {
 function onAccepted(payload: AcceptedFile) {
   source.value = payload
 }
+
+function onTraceChange(options: TraceOptions) {
+  traceOptions.value = { ...options, mode: traceMode.value }
+}
 </script>
 
 <template>
   <main class="tool">
     <section class="setup">
-      <UploadPanel @accepted="onAccepted" />
+      <UploadPanel
+        :accept-kind="acceptKind"
+        :photo-warning="tool === 'vector'"
+        @accepted="onAccepted"
+      />
       <aside class="params">
         <TraceParamPanel
           v-if="showTrace"
+          :mode="traceMode"
           :disabled="!source"
           :loading="converting"
-          @change="traceOptions = $event"
+          @change="onTraceChange"
         />
         <RasterParamPanel
           v-if="showRaster"
