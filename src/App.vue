@@ -25,16 +25,20 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
         <RouterLink class="home-link" to="/">返回首页</RouterLink>
       </nav>
     </header>
-    <p v-if="pageDescription" class="page-lead">{{ pageDescription }}</p>
-    <RouterView :key="route.fullPath" />
-    <HistoryList />
+    <div class="app-body">
+      <p v-if="pageDescription" class="page-lead">{{ pageDescription }}</p>
+      <RouterView :key="route.fullPath" />
+      <HistoryList />
+    </div>
     <footer class="app-footer">
-      <nav class="footer-nav" aria-label="功能导航">
-        <RouterLink to="/svg">图片转 SVG</RouterLink>
-        <RouterLink to="/edit">调整画面</RouterLink>
-        <RouterLink to="/export">转格式 / 压缩</RouterLink>
-      </nav>
-      <p>图片仅在浏览器本地处理，不上传服务器。</p>
+      <div class="footer-inner">
+        <nav v-if="!isHome" class="footer-nav" aria-label="功能导航">
+          <RouterLink to="/svg">图片转 SVG</RouterLink>
+          <RouterLink to="/edit">调整画面</RouterLink>
+          <RouterLink to="/export">转格式 / 压缩</RouterLink>
+        </nav>
+        <p>图片仅在浏览器本地处理，不上传服务器。</p>
+      </div>
     </footer>
   </div>
 </template>
@@ -52,6 +56,12 @@ body {
 
 .app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-body {
+  flex: 1;
 }
 
 .app-header {
@@ -112,11 +122,17 @@ body {
 }
 
 .app-footer {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 16px 24px 32px;
+  margin-top: auto;
+  border-top: 1px solid #ebeef5;
+  background: #fff;
   color: #909399;
   font-size: 13px;
+}
+
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 24px;
 }
 
 .footer-nav {
@@ -161,8 +177,8 @@ body {
     padding: 12px 16px 0;
   }
 
-  .app-footer {
-    padding: 16px 16px 32px;
+  .footer-inner {
+    padding: 16px;
   }
 }
 </style>

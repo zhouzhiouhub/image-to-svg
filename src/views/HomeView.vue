@@ -12,7 +12,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 <template>
   <main class="home">
     <section class="hero">
-      <h1>Kinolin Tool</h1>
+      <h1>图片处理</h1>
       <p>
         免费在浏览器本地把 PNG、JPG 转成 SVG，也能裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。
       </p>
@@ -40,7 +40,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 .home {
   max-width: 960px;
   margin: 0 auto;
-  padding: 40px 24px 64px;
+  padding: 40px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -132,7 +132,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 
 @media (max-width: 767px) {
   .home {
-    padding: 24px 16px 48px;
+    padding: 24px 16px 16px;
   }
 
   .hero h1 {
