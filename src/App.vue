@@ -52,7 +52,6 @@ watch([locale, () => route.fullPath], () => {
           <RouterLink to="/privacy">{{ t('footer.privacy') }}</RouterLink>
           <a :href="GITHUB_URL" target="_blank" rel="noopener noreferrer">{{ t('footer.github') }}</a>
         </nav>
-        <p>{{ t('footer.note') }}</p>
       </div>
     </footer>
   </div>
@@ -195,7 +194,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 16px;
-  margin-bottom: 8px;
 }
 
 .footer-nav a {
@@ -206,10 +204,6 @@ body {
 .footer-nav a:hover,
 .footer-nav a.router-link-active {
   color: #409eff;
-}
-
-.app-footer p {
-  margin: 0;
 }
 
 @media (max-width: 767px) {

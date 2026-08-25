@@ -57,7 +57,6 @@ export const en = {
   footer: {
     privacy: 'Privacy & security',
     github: 'GitHub',
-    note: 'Images are processed locally in your browser and are not uploaded.',
   },
   privacy: {
     title: 'Privacy & security',

@@ -57,7 +57,6 @@ export const zh = {
   footer: {
     privacy: '隐私与安全',
     github: 'GitHub',
-    note: '图片仅在浏览器本地处理，不上传服务器。',
   },
   privacy: {
     title: '隐私与安全',
