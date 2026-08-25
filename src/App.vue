@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
@@ -25,8 +25,9 @@ const rasterOptions = ref<RasterOptions>({
   quality: 0.92,
 })
 const traceOptions = ref<TraceOptions>({
-  turdsize: 2,
-  extractcolors: false,
+  turdsize: 8,
+  extractcolors: true,
+  posterizelevel: 16,
 })
 const { trace } = useTrace()
 const { rasterize } = useRasterize()
@@ -70,6 +71,8 @@ watch([source, traceOptions], async () => {
   if (!value || value.kind !== 'raster') return
 
   converting.value = true
+  await nextTick()
+  if (seq !== traceSeq) return
   try {
     const svg = await trace(value.file, traceOptions.value)
     if (seq !== traceSeq) return
