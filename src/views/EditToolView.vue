@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import '@/ui/element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import CropEditor from '@/components/CropEditor.vue'

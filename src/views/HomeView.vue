@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { homeTools, type ToolStatus } from '@/data/tools'
+import { homeTools } from '@/data/tools'
 import { t } from '@/i18n'
-
-const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
-  available: 'success',
-  soon: 'warning',
-  planned: 'info',
-}
 </script>
 
 <template>
@@ -21,7 +15,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
         <RouterLink v-for="tool in homeTools" :key="tool.id" class="card" :to="tool.to">
           <div class="card-top">
             <h2>{{ t(`tools.${tool.id}.title`) }}</h2>
-            <el-tag size="small" :type="tagType[tool.status]">{{ t('tools.available') }}</el-tag>
+            <span class="status" :data-status="tool.status">{{ t('tools.available') }}</span>
           </div>
           <p>{{ t(`tools.${tool.id}.description`) }}</p>
           <span class="action">{{ tool.status === 'available' ? t('home.start') : t('home.soon') }}</span>
@@ -103,6 +97,29 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   margin: 0;
   font-size: 17px;
   font-weight: 600;
+}
+
+.status {
+  flex-shrink: 0;
+  padding: 0 7px;
+  border: 1px solid var(--app-tag-ok-border);
+  border-radius: 4px;
+  background: var(--app-tag-ok-bg);
+  color: var(--app-tag-ok-text);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.status[data-status='soon'] {
+  border-color: var(--app-tag-warn-border);
+  background: var(--app-tag-warn-bg);
+  color: var(--app-tag-warn-text);
+}
+
+.status[data-status='planned'] {
+  border-color: var(--app-tag-info-border);
+  background: var(--app-tag-info-bg);
+  color: var(--app-tag-info-text);
 }
 
 .card p {

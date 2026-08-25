@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, defineAsyncComponent, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import HistoryList from '@/components/HistoryList.vue'
+import { useSessionHistory } from '@/composables/useSessionHistory'
 import { GITHUB_URL, t, useI18n } from '@/i18n'
 import { applyRouteSeo } from '@/seo'
 import { useTheme } from '@/theme'
 
+const HistoryList = defineAsyncComponent(() => import('@/components/HistoryList.vue'))
 const route = useRoute()
+const { records } = useSessionHistory()
 const { locale, setLocale } = useI18n()
 const { theme, setTheme } = useTheme()
 const isHome = computed(() => route.name === 'home')
 const showHeading = computed(() => route.name === 'svg' || route.name === 'edit' || route.name === 'export')
+const showHistory = computed(() => records.value.length > 0)
 const pageKey = computed(() => (typeof route.name === 'string' ? route.name : 'notFound'))
 const pageTitle = computed(() => (showHeading.value ? t(`seo.${pageKey.value}.title`) : ''))
 const pageDescription = computed(() => (showHeading.value ? t(`seo.${pageKey.value}.description`) : ''))
@@ -100,7 +103,7 @@ watch([locale, () => route.fullPath], () => {
     <div class="app-body">
       <p v-if="pageDescription" class="page-lead">{{ pageDescription }}</p>
       <RouterView :key="route.fullPath" />
-      <HistoryList />
+      <HistoryList v-if="showHistory" />
     </div>
     <footer class="app-footer">
       <div class="footer-inner">

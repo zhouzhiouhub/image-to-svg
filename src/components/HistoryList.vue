@@ -3,6 +3,7 @@ import { useSessionHistory, removeHistory, clearHistory } from '@/composables/us
 import { formatBytes } from '@/utils/format'
 import type { RasterFormat } from '@/utils/svgRaster'
 import { t } from '@/i18n'
+import '@/ui/element-plus'
 
 const { records } = useSessionHistory()
 

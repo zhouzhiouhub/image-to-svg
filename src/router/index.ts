@@ -1,10 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import SvgToolView from '@/views/SvgToolView.vue'
-import EditToolView from '@/views/EditToolView.vue'
-import FormatToolView from '@/views/FormatToolView.vue'
-import NotFoundView from '@/views/NotFoundView.vue'
-import PrivacyView from '@/views/PrivacyView.vue'
 import { applyRouteSeo } from '@/seo'
 
 const router = createRouter({
@@ -18,7 +13,7 @@ const router = createRouter({
     {
       path: '/svg',
       name: 'svg',
-      component: SvgToolView,
+      component: () => import('@/views/SvgToolView.vue'),
     },
     {
       path: '/svg/preserve',
@@ -35,12 +30,12 @@ const router = createRouter({
     {
       path: '/edit',
       name: 'edit',
-      component: EditToolView,
+      component: () => import('@/views/EditToolView.vue'),
     },
     {
       path: '/export',
       name: 'export',
-      component: FormatToolView,
+      component: () => import('@/views/FormatToolView.vue'),
     },
     {
       path: '/format',
@@ -73,12 +68,12 @@ const router = createRouter({
     {
       path: '/privacy',
       name: 'privacy',
-      component: PrivacyView,
+      component: () => import('@/views/PrivacyView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'notFound',
-      component: NotFoundView,
+      component: () => import('@/views/NotFoundView.vue'),
     },
   ],
   scrollBehavior() {

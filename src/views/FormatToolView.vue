@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import '@/ui/element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
 import ExportParamPanel from '@/components/ExportParamPanel.vue'
 import type { ExportOptions } from '@/components/ExportParamPanel.vue'
