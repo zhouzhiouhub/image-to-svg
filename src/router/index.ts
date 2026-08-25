@@ -3,6 +3,8 @@ import HomeView from '@/views/HomeView.vue'
 import SvgToolView from '@/views/SvgToolView.vue'
 import EditToolView from '@/views/EditToolView.vue'
 import FormatToolView from '@/views/FormatToolView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { applyRouteSeo, seoPages } from '@/seo'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,13 +13,13 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { title: 'Kinolin Tool' },
+      meta: { title: seoPages.home.title, description: seoPages.home.description },
     },
     {
       path: '/svg',
       name: 'svg',
       component: SvgToolView,
-      meta: { title: '图片转 SVG' },
+      meta: { title: seoPages.svg.title, description: seoPages.svg.description },
     },
     {
       path: '/svg/preserve',
@@ -35,13 +37,13 @@ const router = createRouter({
       path: '/edit',
       name: 'edit',
       component: EditToolView,
-      meta: { title: '调整画面' },
+      meta: { title: seoPages.edit.title, description: seoPages.edit.description },
     },
     {
       path: '/export',
       name: 'export',
       component: FormatToolView,
-      meta: { title: '转格式 / 压缩' },
+      meta: { title: seoPages.export.title, description: seoPages.export.description },
     },
     {
       path: '/format',
@@ -73,7 +75,9 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/',
+      name: 'notFound',
+      component: NotFoundView,
+      meta: { title: seoPages.notFound.title, description: seoPages.notFound.description },
     },
   ],
   scrollBehavior() {
@@ -82,8 +86,7 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  const title = typeof to.meta.title === 'string' ? to.meta.title : 'Kinolin Tool'
-  document.title = to.name === 'home' ? title : `${title} · Kinolin Tool`
+  applyRouteSeo(to)
 })
 
 export default router

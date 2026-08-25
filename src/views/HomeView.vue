@@ -12,10 +12,12 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 <template>
   <main class="home">
     <section class="hero">
-      <h1>选择你要做的事</h1>
-      <p>图片在浏览器本地处理，不上传服务器。先选要做的事，再上传图片。</p>
+      <h1>Kinolin Tool</h1>
+      <p>
+        免费在浏览器本地把 PNG、JPG 转成 SVG，也能裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。
+      </p>
     </section>
-    <section v-for="group in toolGroups" :key="group.title" class="group">
+    <nav v-for="group in toolGroups" :key="group.title" class="group" aria-label="功能列表">
       <header v-if="group.intro" class="group-head">
         <h2>{{ group.title }}</h2>
         <p>{{ group.intro }}</p>
@@ -30,7 +32,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
           <span class="action">{{ tool.status === 'available' ? '开始使用' : '查看计划' }}</span>
         </RouterLink>
       </div>
-    </section>
+    </nav>
   </main>
 </template>
 

@@ -12,7 +12,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CompareView: typeof import('./src/components/CompareView.vue')['default']
-    CompressParamPanel: typeof import('./src/components/CompressParamPanel.vue')['default']
     CropEditor: typeof import('./src/components/CropEditor.vue')['default']
     CropParamPanel: typeof import('./src/components/CropParamPanel.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -26,9 +25,10 @@ declare module 'vue' {
     ExportParamPanel: typeof import('./src/components/ExportParamPanel.vue')['default']
     HistoryList: typeof import('./src/components/HistoryList.vue')['default']
     QueueResultList: typeof import('./src/components/QueueResultList.vue')['default']
-    RasterParamPanel: typeof import('./src/components/RasterParamPanel.vue')['default']
     ResizeParamPanel: typeof import('./src/components/ResizeParamPanel.vue')['default']
     ResultBar: typeof import('./src/components/ResultBar.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
     TraceParamPanel: typeof import('./src/components/TraceParamPanel.vue')['default']
     TransformParamPanel: typeof import('./src/components/TransformParamPanel.vue')['default']
     UploadPanel: typeof import('./src/components/UploadPanel.vue')['default']

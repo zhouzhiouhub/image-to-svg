@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+# 构建时若设置 VITE_SITE_URL，会在 dist/robots.txt 写入 Sitemap 绝对地址

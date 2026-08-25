@@ -2,12 +2,56 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Kinolin Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kinolin Tool - 本地图片转 SVG、裁剪与压缩</title>
+    <meta
+      name="description"
+      content="免费在浏览器本地把 PNG、JPG 转成 SVG，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="application-name" content="Kinolin Tool" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="/" vite-ignore />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="Kinolin Tool" />
+    <meta property="og:title" content="Kinolin Tool - 本地图片转 SVG、裁剪与压缩" />
+    <meta
+      property="og:description"
+      content="免费在浏览器本地把 PNG、JPG 转成 SVG，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。"
+    />
+    <meta property="og:url" content="/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Kinolin Tool - 本地图片转 SVG、裁剪与压缩" />
+    <meta
+      name="twitter:description"
+      content="免费在浏览器本地把 PNG、JPG 转成 SVG，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。"
+    />
+    <script id="seo-jsonld" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Kinolin Tool",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Any",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+        "description": "免费在浏览器本地把 PNG、JPG 转成 SVG，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。",
+        "inLanguage": "zh-CN"
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
+    <noscript>
+      <h1>Kinolin Tool</h1>
+      <p>免费在浏览器本地处理图片，不上传服务器。</p>
+      <ul>
+        <li><a href="/svg">图片转 SVG</a>：PNG / JPG 原样封装或矢量描摹</li>
+        <li><a href="/edit">调整画面</a>：旋转、裁剪、改尺寸</li>
+        <li><a href="/export">转格式 / 压缩</a>：PNG、JPEG、WebP 与压缩</li>
+      </ul>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -5,7 +5,11 @@ import HistoryList from '@/components/HistoryList.vue'
 
 const route = useRoute()
 const isHome = computed(() => route.name === 'home')
+const showHeading = computed(() => route.name === 'svg' || route.name === 'edit' || route.name === 'export')
 const pageTitle = computed(() => (typeof route.meta.title === 'string' ? route.meta.title : ''))
+const pageDescription = computed(() =>
+  showHeading.value && typeof route.meta.description === 'string' ? route.meta.description : '',
+)
 const favicon = `${import.meta.env.BASE_URL}favicon.svg`
 </script>
 
@@ -13,16 +17,25 @@ const favicon = `${import.meta.env.BASE_URL}favicon.svg`
   <div class="app">
     <header class="app-header">
       <RouterLink class="brand" to="/">
-        <img :src="favicon" alt="" width="28" height="28" />
+        <img :src="favicon" alt="Kinolin Tool" width="28" height="28" />
         <span>Kinolin Tool</span>
       </RouterLink>
       <nav v-if="!isHome" class="nav">
-        <span class="page-title">{{ pageTitle }}</span>
+        <h1 v-if="showHeading" class="page-title">{{ pageTitle }}</h1>
         <RouterLink class="home-link" to="/">返回首页</RouterLink>
       </nav>
     </header>
+    <p v-if="pageDescription" class="page-lead">{{ pageDescription }}</p>
     <RouterView :key="route.fullPath" />
     <HistoryList />
+    <footer class="app-footer">
+      <nav class="footer-nav" aria-label="功能导航">
+        <RouterLink to="/svg">图片转 SVG</RouterLink>
+        <RouterLink to="/edit">调整画面</RouterLink>
+        <RouterLink to="/export">转格式 / 压缩</RouterLink>
+      </nav>
+      <p>图片仅在浏览器本地处理，不上传服务器。</p>
+    </footer>
   </div>
 </template>
 
@@ -73,8 +86,19 @@ body {
 }
 
 .page-title {
+  margin: 0;
   color: #606266;
   font-size: 14px;
+  font-weight: 500;
+}
+
+.page-lead {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 24px 0;
+  color: #606266;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .home-link {
@@ -87,13 +111,58 @@ body {
   text-decoration: underline;
 }
 
+.app-footer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 24px 32px;
+  color: #909399;
+  font-size: 13px;
+}
+
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.footer-nav a {
+  color: #606266;
+  text-decoration: none;
+}
+
+.footer-nav a:hover,
+.footer-nav a.router-link-active {
+  color: #409eff;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
 @media (max-width: 767px) {
   .app-header {
     padding: 0 16px;
   }
 
   .page-title {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .page-lead {
+    padding: 12px 16px 0;
+  }
+
+  .app-footer {
+    padding: 16px 16px 32px;
   }
 }
 </style>
