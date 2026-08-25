@@ -1,0 +1,18 @@
+# Commit messages (Source Control ✨ Generate)
+
+When Cursor auto-generates a Git commit message for this repository (the sparkle button in Source Control), you MUST write it in Simplified Chinese.
+
+Format: <type>(optional scope): <short Chinese summary>
+
+- type: feat, fix, docs, refactor, test, chore, build, ci, style, or perf
+- Subject only, under 72 characters
+- Add a short Chinese body only when it materially improves clarity
+- Base the message only on staged changes; do not exaggerate scope
+- Documentation-only changes use docs
+- Never include secrets, tokens, keys, or account information
+- Do not write the subject in English
+
+Examples:
+- feat(upload): 支持拖拽与粘贴输入图片
+- fix(raster): 修正 JPEG 导出缺少白底
+- chore: 完善 gitignore 并停止跟踪 docs

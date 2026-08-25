@@ -1,0 +1,28 @@
+---
+description: Git 提交信息使用简体中文 Conventional Commits
+alwaysApply: true
+---
+
+# Git 提交规范
+
+生成或撰写 commit message 时（含用户要求提交、Agent 执行 `git commit`），只根据**已暂存**的变更，使用**简体中文**。
+
+格式：
+
+```
+<type>(可选 scope): <简短中文摘要>
+```
+
+- `type` 仅用：`feat` `fix` `docs` `refactor` `test` `chore` `build` `ci` `style` `perf`
+- 标题不超过 72 字；仅在能显著提高理解时加一段简短中文正文
+- 不要夸大范围。纯文档（如 `README.md`、设计文档）用 `docs`
+- 禁止写入密钥、token、账号、私钥或其它敏感信息
+
+示例：
+
+```
+feat(upload): 支持拖拽与粘贴输入图片
+fix(raster): 修正 JPEG 导出缺少白底
+docs: 补充 Cloudflare 静态部署说明
+chore: 完善 gitignore 并停止跟踪 docs
+```
