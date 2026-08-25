@@ -1,8 +1,10 @@
 import {
   rasterizeInput,
+  rasterizeToSize,
   svgToBlob,
   type RasterOptions,
   type RasterizeResult,
+  type ResizeOptions,
 } from '@/utils/svgRaster'
 import type { InputKind } from '@/types/input'
 
@@ -19,5 +21,13 @@ export function useRasterize() {
     return rasterizeInput(file, kind, options)
   }
 
-  return { rasterize, rasterizeFile }
+  async function resizeFile(
+    file: File,
+    kind: InputKind,
+    options: ResizeOptions,
+  ): Promise<RasterizeResult> {
+    return rasterizeToSize(file, kind, options)
+  }
+
+  return { rasterize, rasterizeFile, resizeFile }
 }

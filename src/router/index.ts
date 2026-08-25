@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import SvgToolView from '@/views/SvgToolView.vue'
 import FormatToolView from '@/views/FormatToolView.vue'
-import ComingSoonView from '@/views/ComingSoonView.vue'
+import ResizeToolView from '@/views/ResizeToolView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,12 +42,8 @@ const router = createRouter({
     {
       path: '/resize',
       name: 'resize',
-      component: ComingSoonView,
-      meta: {
-        title: '图片尺寸调整',
-        description: '按像素、比例缩放或裁剪后导出，方便适配头像、封面和不同平台规格。',
-        statusLabel: '即将推出',
-      },
+      component: ResizeToolView,
+      meta: { title: '图片尺寸调整' },
     },
     {
       path: '/app',
