@@ -7,9 +7,12 @@ import type { RasterFormat } from '@/utils/svgRaster'
 
 const props = defineProps<{
   source?: AcceptedFile | null
+  pipeline?: string
   svg?: string | null
   rasterBlob?: Blob | null
   rasterType?: RasterFormat
+  resultWidth?: number
+  resultHeight?: number
 }>()
 
 const pathCount = computed(() => props.svg?.match(/<path\b/gi)?.length ?? 0)
@@ -21,6 +24,11 @@ const larger = computed(() => {
   if (props.rasterBlob) return rasterBytes.value > props.source.file.size
   return false
 })
+const pipelineLabel = computed(() => {
+  if (props.pipeline) return props.pipeline
+  if (!props.source) return ''
+  return props.source.kind === 'svg' ? 'SVG → 位图' : '位图 → SVG'
+})
 
 function fileStem() {
   const name = props.source?.file.name ?? 'result'
@@ -28,8 +36,9 @@ function fileStem() {
 }
 
 function rasterExt() {
-  if (props.rasterType === 'image/jpeg') return 'jpg'
-  if (props.rasterType === 'image/webp') return 'webp'
+  const type = props.rasterType ?? props.rasterBlob?.type
+  if (type === 'image/jpeg') return 'jpg'
+  if (type === 'image/webp') return 'webp'
   return 'png'
 }
 
@@ -67,7 +76,7 @@ function downloadRaster() {
   <section class="bar">
     <template v-if="source">
       <span>{{ source.file.name }}</span>
-      <span>{{ source.kind === 'svg' ? 'SVG → 位图' : '位图 → SVG' }}</span>
+      <span>{{ pipelineLabel }}</span>
       <span>{{ formatBytes(source.file.size) }}</span>
       <span v-if="source.width && source.height">{{ source.width }} × {{ source.height }}</span>
       <template v-if="svg">
@@ -78,10 +87,13 @@ function downloadRaster() {
       </template>
       <template v-else-if="rasterBlob">
         <span :class="{ warn: larger }">结果 {{ formatBytes(rasterBytes) }}</span>
-        <el-button size="small" type="primary" @click="downloadRaster">下载 {{ rasterExt().toUpperCase() }}</el-button>
+        <span v-if="resultWidth && resultHeight">{{ resultWidth }} × {{ resultHeight }}</span>
+        <el-button size="small" type="primary" @click="downloadRaster">
+          下载 {{ rasterExt().toUpperCase() }}
+        </el-button>
       </template>
     </template>
-    <span v-else>指标与下载（待接入）</span>
+    <span v-else>上传后可预览体积并下载</span>
   </section>
 </template>
 

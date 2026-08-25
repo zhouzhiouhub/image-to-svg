@@ -46,8 +46,8 @@ export const toolGroups: ToolGroup[] = [
         to: '/format',
         title: '图片格式转换',
         description: '在 PNG、JPEG、WebP 等常见格式之间互转，按目标场景选择体积与透明通道。',
-        status: 'soon',
-        statusLabel: '即将推出',
+        status: 'available',
+        statusLabel: '可用',
       },
       {
         id: 'resize',

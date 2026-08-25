@@ -2,10 +2,22 @@
 import { computed, reactive, watch } from 'vue'
 import type { RasterFormat, RasterOptions } from '@/utils/svgRaster'
 
-defineProps<{
-  disabled?: boolean
-  loading?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean
+    loading?: boolean
+    title?: string
+    emptyText?: string
+    loadingText?: string
+    initialScale?: number
+  }>(),
+  {
+    title: '转换参数',
+    emptyText: '请先上传图片后再选择导出格式',
+    loadingText: '正在转换…',
+    initialScale: 1,
+  },
+)
 
 const emit = defineEmits<{
   change: [options: RasterOptions]
@@ -13,7 +25,7 @@ const emit = defineEmits<{
 
 const form = reactive({
   type: 'image/png' as RasterFormat,
-  scale: 2,
+  scale: props.initialScale,
   quality: 0.92,
   background: 'transparent' as 'transparent' | 'white',
 })
@@ -38,10 +50,10 @@ watch(
 
 <template>
   <section class="panel" :class="{ disabled }">
-    <h2>导出参数</h2>
-    <p v-if="disabled">请先上传 SVG 后再选择导出格式</p>
+    <h2>{{ title }}</h2>
+    <p v-if="disabled">{{ emptyText }}</p>
     <template v-else>
-      <p v-if="loading">正在导出位图…</p>
+      <p v-if="loading">{{ loadingText }}</p>
       <el-radio-group v-model="form.type" size="small">
         <el-radio-button value="image/png">PNG</el-radio-button>
         <el-radio-button value="image/jpeg">JPEG</el-radio-button>
@@ -59,9 +71,9 @@ watch(
         <span>质量</span>
         <el-slider v-model="form.quality" :min="0.1" :max="1" :step="0.02" />
       </div>
-      <div class="row">
+      <div v-if="!jpegLocked" class="row">
         <span>背景</span>
-        <el-radio-group v-model="form.background" size="small" :disabled="jpegLocked">
+        <el-radio-group v-model="form.background" size="small">
           <el-radio-button value="transparent">透明</el-radio-button>
           <el-radio-button value="white">白色</el-radio-button>
         </el-radio-group>

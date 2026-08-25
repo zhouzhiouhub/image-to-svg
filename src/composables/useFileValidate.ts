@@ -1,4 +1,5 @@
 import { MAX_EDGE_PX, MAX_FILE_BYTES, type InputKind, type ValidateResult } from '@/types/input'
+import { parseSvgSize } from '@/utils/svgRaster'
 import {
   isAnimatedGif,
   isAnimatedPng,
@@ -53,11 +54,21 @@ export function useFileValidate() {
         return { ok: false, message: '请使用内联资源的 SVG（图片请转 data URI）' }
       }
 
-      return {
-        ok: true,
-        kind: 'svg',
-        format,
-        info: options.expect === 'svg' ? undefined : '已检测到 SVG，将导出为 PNG / JPEG / WebP',
+      try {
+        const size = parseSvgSize(svgText)
+        return {
+          ok: true,
+          kind: 'svg',
+          format,
+          width: size.width,
+          height: size.height,
+          info: options.expect === 'svg' ? undefined : '已检测到 SVG，将导出为 PNG / JPEG / WebP',
+        }
+      } catch (error) {
+        return {
+          ok: false,
+          message: error instanceof Error ? error.message : 'SVG 缺少尺寸信息，无法导出',
+        }
       }
     }
 

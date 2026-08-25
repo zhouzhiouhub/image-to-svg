@@ -105,6 +105,7 @@ function onTraceChange(options: TraceOptions) {
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
+      result-alt="SVG 结果"
       :converting="converting"
     />
     <ResultBar :source="source" :svg="resultSvg" />

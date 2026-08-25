@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import SvgToolView from '@/views/SvgToolView.vue'
+import FormatToolView from '@/views/FormatToolView.vue'
 import ComingSoonView from '@/views/ComingSoonView.vue'
 
 const router = createRouter({
@@ -35,12 +36,8 @@ const router = createRouter({
     {
       path: '/format',
       name: 'format',
-      component: ComingSoonView,
-      meta: {
-        title: '图片格式转换',
-        description: '在 PNG、JPEG、WebP 等常见格式之间互转，按目标场景选择体积与透明通道。',
-        statusLabel: '即将推出',
-      },
+      component: FormatToolView,
+      meta: { title: '图片格式转换' },
     },
     {
       path: '/resize',
