@@ -81,6 +81,14 @@ export const toolGroups: ToolGroup[] = [
         status: 'available',
         statusLabel: '可用',
       },
+      {
+        id: 'batch',
+        to: '/batch',
+        title: '批量处理',
+        description: '一次拖入多张图片，批量转格式或压缩，可逐张下载或打包 zip。',
+        status: 'available',
+        statusLabel: '可用',
+      },
     ],
   },
 ]
