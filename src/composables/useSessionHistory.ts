@@ -99,10 +99,19 @@ async function restore() {
   }
 }
 
-const ready = restore().catch(() => undefined)
+let ready: Promise<void> | undefined
+
+function whenHistoryReady() {
+  ready ||= restore().catch(() => undefined)
+  return ready
+}
 
 function afterReady(run: () => void) {
-  void ready.then(run)
+  void whenHistoryReady().then(run)
+}
+
+export function loadSessionHistory() {
+  return whenHistoryReady()
 }
 
 export function recordHistory(input: HistoryRecordInput) {

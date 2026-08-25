@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import { useSessionHistory } from '@/composables/useSessionHistory'
+import { loadSessionHistory, useSessionHistory } from '@/composables/useSessionHistory'
 import { GITHUB_URL, t, useI18n } from '@/i18n'
 import { applyRouteSeo } from '@/seo'
 import { useTheme } from '@/theme'
@@ -35,6 +35,17 @@ function toggleTheme() {
 
 watch([locale, () => route.fullPath], () => {
   applyRouteSeo(route)
+})
+
+onMounted(() => {
+  const start = () => {
+    void loadSessionHistory()
+  }
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(start, { timeout: 2000 })
+  } else {
+    setTimeout(start, 200)
+  }
 })
 </script>
 

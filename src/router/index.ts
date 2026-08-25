@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import { applyRouteSeo } from '@/seo'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,13 +75,10 @@ const router = createRouter({
       component: () => import('@/views/NotFoundView.vue'),
     },
   ],
-  scrollBehavior() {
+  scrollBehavior(_to, from) {
+    if (!from.name) return false
     return { top: 0 }
   },
-})
-
-router.afterEach((to) => {
-  applyRouteSeo(to)
 })
 
 export default router

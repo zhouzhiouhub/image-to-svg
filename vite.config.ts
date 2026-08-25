@@ -11,28 +11,6 @@ import { htmlWithRouteSeo, INDEXABLE_ROUTE_NAMES, seoPages } from './src/seoPage
 
 const SITE_URL = (process.env.VITE_SITE_URL ?? '').replace(/\/$/, '')
 
-function inlineEntryCssPlugin(): Plugin {
-  return {
-    name: 'inline-entry-css',
-    apply: 'build',
-    enforce: 'post',
-    transformIndexHtml: {
-      order: 'post',
-      handler(html, ctx) {
-        if (!ctx.bundle) return html
-        const assets = Object.values(ctx.bundle)
-        return html.replace(/<link\s+rel="stylesheet"[^>]*href="([^"]+)"[^>]*>/gi, (tag, href: string) => {
-          const fileName = href.replace(/[?#].*$/, '').replace(/^.*\/(assets\/)/, '$1')
-          const asset = assets.find((item) => item.type === 'asset' && item.fileName.replace(/\\/g, '/') === fileName)
-          if (!asset || asset.type !== 'asset') return tag
-          const css = typeof asset.source === 'string' ? asset.source : new TextDecoder().decode(asset.source)
-          return `<style>${css.replace(/<\/style/gi, '<\\/style')}</style>`
-        })
-      },
-    },
-  }
-}
-
 function seoFilesPlugin(): Plugin {
   return {
     name: 'kinolin-seo-files',
@@ -79,7 +57,6 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver({ importStyle: 'css' })],
     }),
-    inlineEntryCssPlugin(),
     seoFilesPlugin(),
   ],
   resolve: {
@@ -96,5 +73,6 @@ export default defineConfig({
     sourcemap: false,
     outDir: 'dist',
     emptyOutDir: true,
+    modulePreload: { polyfill: false },
   },
 })

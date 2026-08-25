@@ -24,11 +24,13 @@ export function detectTheme(): Theme {
 export function applyTheme(next: Theme) {
   if (typeof document === 'undefined') return
   const root = document.documentElement
-  root.classList.toggle('dark', next === 'dark')
-  root.style.colorScheme = next
-  document.body?.classList.toggle('dark', next === 'dark')
+  const isDark = next === 'dark'
+  root.classList.toggle('dark', isDark)
+  document.body?.classList.toggle('dark', isDark)
+  if (root.style.colorScheme !== next) root.style.colorScheme = next
+  const expected = isDark ? '#0f0f0f' : '#ffffff'
   const meta = document.head.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', next === 'dark' ? '#0f0f0f' : '#ffffff')
+  if (meta && meta.getAttribute('content') !== expected) meta.setAttribute('content', expected)
 }
 
 export function setTheme(next: Theme) {
@@ -38,7 +40,13 @@ export function setTheme(next: Theme) {
 }
 
 export function initTheme() {
-  setTheme(detectTheme())
+  const next = detectTheme()
+  theme.value = next
+  const root = typeof document === 'undefined' ? null : document.documentElement
+  const alreadyDark = !!root?.classList.contains('dark')
+  if (next === 'dark' && alreadyDark) return
+  if (next === 'light' && !alreadyDark) return
+  applyTheme(next)
 }
 
 export function useTheme() {
@@ -47,8 +55,4 @@ export function useTheme() {
     isDark: computed(() => theme.value === 'dark'),
     setTheme,
   }
-}
-
-if (typeof window !== 'undefined') {
-  initTheme()
 }

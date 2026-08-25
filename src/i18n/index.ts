@@ -25,7 +25,10 @@ export function t(key: string, vars?: Record<string, string | number>) {
 
 export function applyDocumentLang(next: Locale) {
   if (typeof document === 'undefined') return
-  document.documentElement.lang = htmlLang(next)
+  const lang = htmlLang(next)
+  const root = document.documentElement
+  if (root.lang !== lang) root.lang = lang
+  if (root.getAttribute('data-locale') !== next) root.setAttribute('data-locale', next)
 }
 
 export function setLocale(next: Locale) {
