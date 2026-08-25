@@ -1,41 +1,15 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
-import type { RasterFormat } from '@/utils/svgRaster'
-import { outputTypeFromSource } from '@/utils/transformImage'
 import type { TransformOp } from '@/utils/transformImage'
 
-const props = defineProps<{
+defineProps<{
   disabled?: boolean
   loading?: boolean
-  sourceFormat?: string
 }>()
 
 const emit = defineEmits<{
   transform: [op: TransformOp]
   reset: []
-  change: [options: { type: RasterFormat; quality: number }]
 }>()
-
-const form = reactive({
-  type: 'image/png' as RasterFormat,
-  quality: 0.92,
-})
-
-watch(
-  () => props.sourceFormat,
-  (format) => {
-    if (!format) return
-    form.type = outputTypeFromSource(format)
-  },
-)
-
-watch(
-  () => ({ type: form.type, quality: form.quality }),
-  (value) => {
-    emit('change', value)
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
@@ -51,15 +25,7 @@ watch(
         <el-button size="small" @click="emit('transform', 'flipV')">垂直翻转</el-button>
         <el-button size="small" @click="emit('reset')">恢复原图</el-button>
       </div>
-      <el-radio-group v-model="form.type" size="small">
-        <el-radio-button value="image/png">PNG</el-radio-button>
-        <el-radio-button value="image/jpeg">JPEG</el-radio-button>
-        <el-radio-button value="image/webp">WebP</el-radio-button>
-      </el-radio-group>
-      <div v-if="form.type !== 'image/png'" class="row">
-        <span>质量</span>
-        <el-slider v-model="form.quality" :min="0.1" :max="1" :step="0.02" />
-      </div>
+      <p class="hint">导出保持原图格式。若要改格式，请使用「图片格式转换」。</p>
     </template>
   </section>
 </template>
@@ -90,26 +56,13 @@ p {
   font-size: 13px;
 }
 
+.hint {
+  line-height: 1.5;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.row span {
-  width: 36px;
-  flex-shrink: 0;
-  font-size: 13px;
-  color: #606266;
-}
-
-.row :deep(.el-slider) {
-  flex: 1;
 }
 </style>

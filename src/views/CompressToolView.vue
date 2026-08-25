@@ -5,31 +5,44 @@ import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import CompressParamPanel from '@/components/CompressParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
+import QueueResultList from '@/components/QueueResultList.vue'
 import ResultBar from '@/components/ResultBar.vue'
+import { MAX_QUEUE, useOutputQueue } from '@/composables/useOutputQueue'
 import { useRasterize } from '@/composables/useRasterize'
 import { formatBytes } from '@/utils/format'
 import type { CompressOptions } from '@/utils/compressImage'
-import type { RasterFormat } from '@/utils/svgRaster'
 
-const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
-const resultBlob = ref<Blob | null>(null)
-const resultType = ref<RasterFormat>('image/png')
-const resultWidth = ref<number>()
-const resultHeight = ref<number>()
-const converting = ref(false)
-const keptOriginal = ref(false)
 const compressOptions = ref<CompressOptions>({
   mode: 'quality',
-  format: 'auto',
+  format: 'keep',
   quality: 0.72,
 })
 const { compressFile } = useRasterize()
-let convertSeq = 0
-let convertTimer: ReturnType<typeof setTimeout> | null = null
+const {
+  items,
+  converting,
+  doneCount,
+  errorCount,
+  single,
+  addFiles,
+  removeItem,
+  clearItems,
+  scheduleRestart,
+  downloadItem,
+  downloadZip,
+} = useOutputQueue((source) => compressFile(source.file, source.kind, source.format, compressOptions.value))
 
+const source = computed(() => single.value?.source ?? null)
+const resultBlob = computed(() => single.value?.blob ?? null)
+const resultType = computed(() => single.value?.type ?? 'image/png')
+const resultWidth = computed(() => single.value?.width)
+const resultHeight = computed(() => single.value?.height)
+const keptOriginal = computed(() => single.value?.keptOriginal === true)
+const many = computed(() => items.value.length > 1)
 const pipeline = computed(() => {
+  if (many.value) return `图片压缩 ${doneCount.value}/${items.value.length}`
   if (!source.value) return ''
   if (keptOriginal.value) return '已保留原文件'
   if (!resultBlob.value) return '图片压缩'
@@ -40,13 +53,8 @@ const pipeline = computed(() => {
 })
 
 watch(source, (value, _prev, onCleanup) => {
-  resultBlob.value = null
-  resultWidth.value = undefined
-  resultHeight.value = undefined
-  keptOriginal.value = false
   if (!value) {
     previewUrl.value = null
-    converting.value = false
     return
   }
   const url = URL.createObjectURL(value.file)
@@ -64,78 +72,48 @@ watch(resultBlob, (blob, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch([source, compressOptions], ([value]) => {
-  const seq = ++convertSeq
-  if (convertTimer) {
-    clearTimeout(convertTimer)
-    convertTimer = null
-  }
-
-  if (!value) {
-    converting.value = false
-    return
-  }
-
-  converting.value = true
-  convertTimer = setTimeout(() => {
-    void runConvert(value, seq)
-  }, 120)
+watch(compressOptions, () => {
+  scheduleRestart()
 })
 
-async function runConvert(value: AcceptedFile, seq: number) {
-  try {
-    const result = await compressFile(value.file, value.kind, value.format, compressOptions.value)
-    if (seq !== convertSeq) return
-    resultBlob.value = result.blob
-    resultType.value = result.type
-    resultWidth.value = result.width
-    resultHeight.value = result.height
-    keptOriginal.value = result.keptOriginal
-    if (result.fallbackToPng) {
-      ElMessage.warning('当前浏览器无法编码 WebP，已改为 PNG')
+watch(
+  () => single.value?.status,
+  (status) => {
+    if (status === 'error' && single.value?.error) {
+      ElMessage.error(`压缩失败：${single.value.error}`)
     }
-    if (result.capped) {
-      ElMessage.warning('导出边长已限制在 4096px')
-    }
-    if (result.keptOriginal) {
-      ElMessage.info('压缩后体积未减小，已保留原文件')
-    }
-  } catch (error) {
-    if (seq !== convertSeq) return
-    resultBlob.value = null
-    resultWidth.value = undefined
-    resultHeight.value = undefined
-    keptOriginal.value = false
-    const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `压缩失败：${detail}` : '压缩失败，请换一张图片后重试')
-  } finally {
-    if (seq === convertSeq) converting.value = false
-  }
-}
+  },
+)
+
+watch(keptOriginal, (kept) => {
+  if (kept && !many.value) ElMessage.info('压缩后体积未减小，已保留原文件')
+})
 
 onUnmounted(() => {
-  if (convertTimer) clearTimeout(convertTimer)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
 })
 
-function onAccepted(payload: AcceptedFile) {
-  source.value = payload
-}
-
-function onReplace() {
-  source.value = null
-}
-
 function onCompressChange(options: CompressOptions) {
-  compressOptions.value = options
+  compressOptions.value = { ...options, format: 'keep' }
+}
+
+function onAccepted(payload: AcceptedFile) {
+  addFiles([payload])
 }
 </script>
 
 <template>
   <main class="tool">
-    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
+    <UploadPanel
+      multiple
+      :max-files="MAX_QUEUE"
+      :has-file="!!source && !many"
+      @accepted="onAccepted"
+      @accepted-many="addFiles"
+    />
     <CompareView
+      v-if="!many"
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
@@ -143,11 +121,24 @@ function onCompressChange(options: CompressOptions) {
       :converting="converting"
     />
     <CompressParamPanel
-      :disabled="!source"
+      :disabled="!items.length"
       :loading="converting"
       @change="onCompressChange"
     />
+    <QueueResultList
+      v-if="many"
+      :items="items"
+      :converting="converting"
+      :summary="pipeline"
+      :done-count="doneCount"
+      :error-count="errorCount"
+      @download="downloadItem"
+      @remove="removeItem"
+      @zip="downloadZip"
+      @clear="clearItems"
+    />
     <ResultBar
+      v-else
       :source="source"
       :pipeline="pipeline"
       :raster-blob="resultBlob"
@@ -155,7 +146,7 @@ function onCompressChange(options: CompressOptions) {
       :result-width="resultWidth"
       :result-height="resultHeight"
       :kept-original="keptOriginal"
-      @replace="onReplace"
+      @replace="clearItems"
     />
   </main>
 </template>

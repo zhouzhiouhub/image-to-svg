@@ -5,26 +5,33 @@ import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import RasterParamPanel from '@/components/RasterParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
+import QueueResultList from '@/components/QueueResultList.vue'
 import ResultBar from '@/components/ResultBar.vue'
+import { MAX_QUEUE, useOutputQueue } from '@/composables/useOutputQueue'
 import { useRasterize } from '@/composables/useRasterize'
-import type { RasterFormat, RasterOptions } from '@/utils/svgRaster'
+import type { RasterOptions } from '@/utils/svgRaster'
 
-const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
-const resultBlob = ref<Blob | null>(null)
-const resultType = ref<RasterFormat>('image/png')
-const resultWidth = ref<number>()
-const resultHeight = ref<number>()
-const converting = ref(false)
 const rasterOptions = ref<RasterOptions>({
   type: 'image/png',
   scale: 1,
   quality: 0.92,
 })
 const { rasterizeFile } = useRasterize()
-let convertSeq = 0
-let convertTimer: ReturnType<typeof setTimeout> | null = null
+const {
+  items,
+  converting,
+  doneCount,
+  errorCount,
+  single,
+  addFiles,
+  removeItem,
+  clearItems,
+  scheduleRestart,
+  downloadItem,
+  downloadZip,
+} = useOutputQueue((source) => rasterizeFile(source.file, source.kind, rasterOptions.value))
 
 const formatName: Record<string, string> = {
   png: 'PNG',
@@ -38,7 +45,14 @@ const formatName: Record<string, string> = {
   'image/webp': 'WebP',
 }
 
+const source = computed(() => single.value?.source ?? null)
+const resultBlob = computed(() => single.value?.blob ?? null)
+const resultType = computed(() => single.value?.type ?? 'image/png')
+const resultWidth = computed(() => single.value?.width)
+const resultHeight = computed(() => single.value?.height)
+const many = computed(() => items.value.length > 1)
 const pipeline = computed(() => {
+  if (many.value) return `格式转换 ${doneCount.value}/${items.value.length}`
   if (!source.value) return ''
   const from = formatName[source.value.format] ?? source.value.format
   const to = formatName[resultType.value] ?? 'PNG'
@@ -46,12 +60,8 @@ const pipeline = computed(() => {
 })
 
 watch(source, (value, _prev, onCleanup) => {
-  resultBlob.value = null
-  resultWidth.value = undefined
-  resultHeight.value = undefined
   if (!value) {
     previewUrl.value = null
-    converting.value = false
     return
   }
   const url = URL.createObjectURL(value.file)
@@ -69,73 +79,44 @@ watch(resultBlob, (blob, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch([source, rasterOptions], ([value]) => {
-  const seq = ++convertSeq
-  if (convertTimer) {
-    clearTimeout(convertTimer)
-    convertTimer = null
-  }
-
-  if (!value) {
-    converting.value = false
-    return
-  }
-
-  converting.value = true
-  convertTimer = setTimeout(() => {
-    void runConvert(value, seq)
-  }, 120)
+watch(rasterOptions, () => {
+  scheduleRestart()
 })
 
-async function runConvert(value: AcceptedFile, seq: number) {
-  try {
-    const result = await rasterizeFile(value.file, value.kind, rasterOptions.value)
-    if (seq !== convertSeq) return
-    resultBlob.value = result.blob
-    resultType.value = result.type
-    resultWidth.value = result.width
-    resultHeight.value = result.height
-    if (result.fallbackToPng) {
-      ElMessage.warning('当前浏览器无法编码 WebP，已改为 PNG')
+watch(
+  () => single.value?.status,
+  (status) => {
+    if (status === 'error' && single.value?.error) {
+      ElMessage.error(`转换失败：${single.value.error}`)
     }
-    if (result.capped) {
-      ElMessage.warning('导出边长已限制在 4096px')
-    }
-  } catch (error) {
-    if (seq !== convertSeq) return
-    resultBlob.value = null
-    resultWidth.value = undefined
-    resultHeight.value = undefined
-    const detail = error instanceof Error && error.message ? error.message : ''
-    ElMessage.error(detail ? `转换失败：${detail}` : '转换失败，请换一张图片后重试')
-  } finally {
-    if (seq === convertSeq) converting.value = false
-  }
-}
+  },
+)
 
 onUnmounted(() => {
-  if (convertTimer) clearTimeout(convertTimer)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
 })
 
-function onAccepted(payload: AcceptedFile) {
-  source.value = payload
-}
-
-function onReplace() {
-  source.value = null
-}
-
 function onRasterChange(options: RasterOptions) {
   rasterOptions.value = options
+}
+
+function onAccepted(payload: AcceptedFile) {
+  addFiles([payload])
 }
 </script>
 
 <template>
   <main class="tool">
-    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
+    <UploadPanel
+      multiple
+      :max-files="MAX_QUEUE"
+      :has-file="!!source && !many"
+      @accepted="onAccepted"
+      @accepted-many="addFiles"
+    />
     <CompareView
+      v-if="!many"
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
@@ -145,21 +126,34 @@ function onRasterChange(options: RasterOptions) {
     <RasterParamPanel
       title="转换参数"
       empty-text="请先上传图片后再选择导出格式"
-      loading-text="正在转换…"
+      :loading-text="many ? '正在批量转换…' : '正在转换…'"
       :initial-scale="1"
-      :disabled="!source"
+      :disabled="!items.length"
       :loading="converting"
       :source-format="source?.format"
       @change="onRasterChange"
     />
+    <QueueResultList
+      v-if="many"
+      :items="items"
+      :converting="converting"
+      :summary="pipeline"
+      :done-count="doneCount"
+      :error-count="errorCount"
+      @download="downloadItem"
+      @remove="removeItem"
+      @zip="downloadZip"
+      @clear="clearItems"
+    />
     <ResultBar
+      v-else
       :source="source"
       :pipeline="pipeline"
       :raster-blob="resultBlob"
       :raster-type="resultType"
       :result-width="resultWidth"
       :result-height="resultHeight"
-      @replace="onReplace"
+      @replace="clearItems"
     />
   </main>
 </template>

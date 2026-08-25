@@ -206,15 +206,6 @@ function syncFromHeight(value: number | undefined) {
           </el-radio-group>
         </div>
       </template>
-      <el-radio-group v-model="form.type" size="small">
-        <el-radio-button value="image/png">PNG</el-radio-button>
-        <el-radio-button value="image/jpeg">JPEG</el-radio-button>
-        <el-radio-button value="image/webp">WebP</el-radio-button>
-      </el-radio-group>
-      <div v-if="form.type !== 'image/png'" class="row">
-        <span>质量</span>
-        <el-slider v-model="form.quality" :min="0.1" :max="1" :step="0.02" />
-      </div>
       <div v-if="showBackground" class="row">
         <span>背景</span>
         <el-radio-group v-model="form.background" size="small">
@@ -222,6 +213,7 @@ function syncFromHeight(value: number | undefined) {
           <el-radio-button value="white">白色</el-radio-button>
         </el-radio-group>
       </div>
+      <p class="hint">导出保持原图格式。若要改格式，请使用「图片格式转换」。</p>
     </template>
   </section>
 </template>

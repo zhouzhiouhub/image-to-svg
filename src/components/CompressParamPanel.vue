@@ -13,7 +13,7 @@ const emit = defineEmits<{
 
 const form = reactive({
   mode: 'quality' as CompressMode,
-  format: 'auto' as CompressFormat,
+  format: 'keep' as CompressFormat,
   quality: 0.72,
 })
 
@@ -45,24 +45,14 @@ watch(
           <el-radio-button value="smaller">更小体积</el-radio-button>
         </el-radio-group>
       </div>
-      <div class="row">
-        <span>格式</span>
-        <el-radio-group v-model="form.format" size="small">
-          <el-radio-button value="auto">自动</el-radio-button>
-          <el-radio-button value="keep">原格式</el-radio-button>
-          <el-radio-button value="image/webp">WebP</el-radio-button>
-          <el-radio-button value="image/jpeg">JPEG</el-radio-button>
-          <el-radio-button value="image/png">PNG</el-radio-button>
-        </el-radio-group>
-      </div>
-      <div v-if="form.mode === 'smaller' && form.format !== 'image/png'" class="row">
+      <div v-if="form.mode === 'smaller'" class="row">
         <span>质量</span>
         <el-slider v-model="form.quality" :min="0.5" :max="0.9" :step="0.02" />
       </div>
       <p v-if="form.mode === 'quality'" class="hint">
-        按高质量重编码，优先 WebP；若体积没有变小，会保留原文件。
+        按原格式高质量重编码；若体积没有变小，会保留原文件。改格式请用「图片格式转换」。
       </p>
-      <p v-else class="hint">降低质量以换取更小文件，观感可能略有损失。</p>
+      <p v-else class="hint">降低质量以换取更小文件，仍导出为原格式，观感可能略有损失。</p>
     </template>
   </section>
 </template>

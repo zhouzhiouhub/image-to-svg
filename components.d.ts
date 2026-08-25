@@ -24,6 +24,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HistoryList: typeof import('./src/components/HistoryList.vue')['default']
+    QueueResultList: typeof import('./src/components/QueueResultList.vue')['default']
     RasterParamPanel: typeof import('./src/components/RasterParamPanel.vue')['default']
     ResizeParamPanel: typeof import('./src/components/ResizeParamPanel.vue')['default']
     ResultBar: typeof import('./src/components/ResultBar.vue')['default']

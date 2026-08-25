@@ -6,7 +6,6 @@ import ResizeToolView from '@/views/ResizeToolView.vue'
 import CompressToolView from '@/views/CompressToolView.vue'
 import TransformToolView from '@/views/TransformToolView.vue'
 import CropToolView from '@/views/CropToolView.vue'
-import BatchToolView from '@/views/BatchToolView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -69,9 +68,7 @@ const router = createRouter({
     },
     {
       path: '/batch',
-      name: 'batch',
-      component: BatchToolView,
-      meta: { title: '批量处理' },
+      redirect: '/format',
     },
     {
       path: '/app',

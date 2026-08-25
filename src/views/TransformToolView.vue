@@ -10,6 +10,7 @@ import {
   applyTransform,
   decodeToBitmap,
   encodeTransformed,
+  outputTypeFromSource,
   type TransformOp,
 } from '@/utils/transformImage'
 import type { RasterFormat } from '@/utils/svgRaster'
@@ -22,7 +23,6 @@ const resultType = ref<RasterFormat>('image/png')
 const resultWidth = ref<number>()
 const resultHeight = ref<number>()
 const converting = ref(false)
-const encodeOptions = ref({ type: 'image/png' as RasterFormat, quality: 0.92 })
 let original: ImageBitmap | null = null
 let working: ImageBitmap | null = null
 let opSeq = 0
@@ -74,10 +74,12 @@ watch(resultBlob, (blob, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch(encodeOptions, () => {
-  if (!working) return
-  void encodeCurrent()
-})
+function encodeOptions() {
+  return {
+    type: outputTypeFromSource(source.value?.format ?? 'png'),
+    quality: 0.92,
+  }
+}
 
 async function encodeCurrent() {
   if (!working) return
@@ -88,7 +90,7 @@ async function encodeCurrent() {
       working,
       working.width,
       working.height,
-      encodeOptions.value,
+      encodeOptions(),
     )
     if (seq !== opSeq) return
     resultBlob.value = result.blob
@@ -164,10 +166,6 @@ function onAccepted(payload: AcceptedFile) {
 function onReplace() {
   source.value = null
 }
-
-function onEncodeChange(options: { type: RasterFormat; quality: number }) {
-  encodeOptions.value = options
-}
 </script>
 
 <template>
@@ -183,10 +181,8 @@ function onEncodeChange(options: { type: RasterFormat; quality: number }) {
     <TransformParamPanel
       :disabled="!source"
       :loading="converting"
-      :source-format="source?.format"
       @transform="onTransform"
       @reset="onReset"
-      @change="onEncodeChange"
     />
     <ResultBar
       :source="source"

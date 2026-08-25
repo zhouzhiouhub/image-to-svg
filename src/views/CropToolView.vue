@@ -6,7 +6,7 @@ import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import CropEditor from '@/components/CropEditor.vue'
 import CropParamPanel from '@/components/CropParamPanel.vue'
 import ResultBar from '@/components/ResultBar.vue'
-import { decodeToBitmap } from '@/utils/transformImage'
+import { decodeToBitmap, outputTypeFromSource } from '@/utils/transformImage'
 import { clampCrop, encodeCrop, fitCropAspect, fullCrop, type CropRect } from '@/utils/cropImage'
 import type { RasterFormat } from '@/utils/svgRaster'
 
@@ -52,6 +52,7 @@ watch(source, async (value, _prev, onCleanup) => {
   converting.value = true
   try {
     working = await decodeToBitmap(value.file, value.kind)
+    encodeOptions.value = { type: outputTypeFromSource(value.format), quality: 0.92 }
     crop.value = fullCrop(working.width, working.height)
   } catch (error) {
     converting.value = false
@@ -133,10 +134,6 @@ function onAccepted(payload: AcceptedFile) {
 function onReplace() {
   source.value = null
 }
-
-function onEncodeChange(options: { type: RasterFormat; quality: number }) {
-  encodeOptions.value = options
-}
 </script>
 
 <template>
@@ -163,12 +160,10 @@ function onEncodeChange(options: { type: RasterFormat; quality: number }) {
     <CropParamPanel
       :disabled="!source"
       :loading="converting"
-      :source-format="source?.format"
       :crop-width="crop.width"
       :crop-height="crop.height"
       @aspect="onAspect"
       @reset="onResetCrop"
-      @change="onEncodeChange"
     />
     <ResultBar
       :source="source"
