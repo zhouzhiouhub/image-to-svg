@@ -25,6 +25,7 @@ const rasterOptions = ref<RasterOptions>({
   quality: 0.92,
 })
 const traceOptions = ref<TraceOptions>({
+  mode: 'preserve',
   turdsize: 8,
   extractcolors: true,
   posterizelevel: 16,

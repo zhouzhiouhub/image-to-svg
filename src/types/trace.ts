@@ -1,4 +1,5 @@
 export type TraceOptions = {
+  mode: 'preserve' | 'vector'
   turdsize: number
   extractcolors: boolean
   posterizelevel?: number

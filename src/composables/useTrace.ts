@@ -18,6 +18,17 @@ export function useTrace() {
     let lastError: unknown
 
     try {
+      if (options.mode === 'preserve') {
+        const bytes = new Uint8Array(await file.arrayBuffer())
+        let binary = ''
+        const chunkSize = 0x8000
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize))
+        }
+        const encoded = btoa(binary)
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${sourceWidth}" height="${sourceHeight}" viewBox="0 0 ${sourceWidth} ${sourceHeight}"><image width="${sourceWidth}" height="${sourceHeight}" href="data:${file.type};base64,${encoded}"/></svg>`
+      }
+
       if (options.extractcolors) {
         await new Promise<void>((resolve) => {
           requestAnimationFrame(() => resolve())
