@@ -16,7 +16,7 @@ const statusLabel = computed(() =>
 
 <template>
   <main class="soon">
-    <el-tag size="small" :type="route.name === 'app' ? 'info' : 'warning'">{{ statusLabel }}</el-tag>
+    <el-tag size="small" type="warning">{{ statusLabel }}</el-tag>
     <h1>{{ title }}</h1>
     <p>{{ description }}</p>
     <p class="note">该功能还在准备中。当前可以先使用「原样转 SVG」或「矢量描摹」，图片仍在浏览器本地处理。</p>

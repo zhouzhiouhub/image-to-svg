@@ -10,7 +10,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { title: '图片工具' },
+      meta: { title: 'Kinolin Tool' },
     },
     {
       path: '/svg/preserve',
@@ -54,13 +54,7 @@ const router = createRouter({
     },
     {
       path: '/app',
-      name: 'app',
-      component: ComingSoonView,
-      meta: {
-        title: '桌面应用',
-        description: '后续会把这套工具打包成可下载应用，方便需要离线、批量使用的人安装。',
-        statusLabel: '规划中',
-      },
+      redirect: '/',
     },
     {
       path: '/:pathMatch(.*)*',
@@ -73,8 +67,8 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
-  const title = typeof to.meta.title === 'string' ? to.meta.title : '图片工具'
-  document.title = to.name === 'home' ? title : `${title} · 图片工具`
+  const title = typeof to.meta.title === 'string' ? to.meta.title : 'Kinolin Tool'
+  document.title = to.name === 'home' ? title : `${title} · Kinolin Tool`
 })
 
 export default router

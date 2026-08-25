@@ -57,14 +57,6 @@ export const toolGroups: ToolGroup[] = [
         status: 'soon',
         statusLabel: '即将推出',
       },
-      {
-        id: 'app',
-        to: '/app',
-        title: '桌面应用',
-        description: '后续会把这套工具打包成可下载应用，方便需要离线、批量使用的人安装。',
-        status: 'planned',
-        statusLabel: '规划中',
-      },
     ],
   },
 ]
