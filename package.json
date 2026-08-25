@@ -21,7 +21,8 @@
     "element-plus": "^2.14.5",
     "esm-potrace-wasm": "^0.5.1",
     "imagetracerjs": "^1.2.6",
-    "vue": "^3.5.41"
+    "vue": "^3.5.41",
+    "vue-router": "^5.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

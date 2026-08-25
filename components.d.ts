@@ -17,6 +17,7 @@ declare module 'vue' {
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSlider: typeof import('element-plus/es')['ElSlider']
+    ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     HistoryList: typeof import('./src/components/HistoryList.vue')['default']
     RasterParamPanel: typeof import('./src/components/RasterParamPanel.vue')['default']
