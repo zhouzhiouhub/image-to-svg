@@ -1,0 +1,46 @@
+html.dark .el-upload-dragger,
+.app.dark .el-upload-dragger {
+  background-color: var(--app-surface);
+  border-color: var(--app-dashed);
+}
+
+html.dark .el-upload-dragger:hover,
+.app.dark .el-upload-dragger:hover {
+  border-color: var(--app-accent);
+}
+
+html.dark .el-radio-button__inner,
+html.dark .el-input-number,
+html.dark .el-input-number__wrapper,
+html.dark .el-input__wrapper,
+html.dark .el-textarea__inner,
+html.dark .el-slider__runway,
+.app.dark .el-radio-button__inner,
+.app.dark .el-input-number,
+.app.dark .el-input-number__wrapper,
+.app.dark .el-input__wrapper,
+.app.dark .el-textarea__inner,
+.app.dark .el-slider__runway {
+  background-color: var(--app-surface);
+}
+
+.app .el-tag.el-tag--success {
+  --el-tag-bg-color: var(--app-tag-ok-bg);
+  --el-tag-border-color: var(--app-tag-ok-border);
+  --el-tag-hover-color: var(--app-tag-ok-text);
+  --el-tag-text-color: var(--app-tag-ok-text);
+}
+
+.app .el-tag.el-tag--warning {
+  --el-tag-bg-color: var(--app-tag-warn-bg);
+  --el-tag-border-color: var(--app-tag-warn-border);
+  --el-tag-hover-color: var(--app-tag-warn-text);
+  --el-tag-text-color: var(--app-tag-warn-text);
+}
+
+.app .el-tag.el-tag--info {
+  --el-tag-bg-color: var(--app-tag-info-bg);
+  --el-tag-border-color: var(--app-tag-info-border);
+  --el-tag-hover-color: var(--app-tag-info-text);
+  --el-tag-text-color: var(--app-tag-info-text);
+}

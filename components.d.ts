@@ -20,7 +20,6 @@ declare module 'vue' {
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
-    ElTag: typeof import('element-plus/es')['ElTag']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     ExportParamPanel: typeof import('./src/components/ExportParamPanel.vue')['default']
     HistoryList: typeof import('./src/components/HistoryList.vue')['default']
