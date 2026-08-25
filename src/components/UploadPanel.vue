@@ -159,12 +159,12 @@ defineExpose({ acceptFile })
 
 .title {
   margin: 0;
-  color: #606266;
+  color: var(--app-muted);
 }
 
 .hint {
   margin: 8px 0 0;
   font-size: 13px;
-  color: #909399;
+  color: var(--app-faint);
 }
 </style>

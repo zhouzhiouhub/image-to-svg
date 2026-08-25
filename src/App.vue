@@ -4,9 +4,11 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import HistoryList from '@/components/HistoryList.vue'
 import { GITHUB_URL, t, useI18n } from '@/i18n'
 import { applyRouteSeo } from '@/seo'
+import { useTheme } from '@/theme'
 
 const route = useRoute()
 const { locale, setLocale } = useI18n()
+const { theme, setTheme } = useTheme()
 const isHome = computed(() => route.name === 'home')
 const showHeading = computed(() => route.name === 'svg' || route.name === 'edit' || route.name === 'export')
 const pageKey = computed(() => (typeof route.name === 'string' ? route.name : 'notFound'))
@@ -39,6 +41,14 @@ watch([locale, () => route.fullPath], () => {
             {{ t('lang.en') }}
           </button>
         </div>
+        <div class="lang" role="group" :aria-label="t('theme.label')">
+          <button type="button" :aria-pressed="theme === 'light'" @click="setTheme('light')">
+            {{ t('theme.light') }}
+          </button>
+          <button type="button" :aria-pressed="theme === 'dark'" @click="setTheme('dark')">
+            {{ t('theme.dark') }}
+          </button>
+        </div>
       </div>
     </header>
     <div class="app-body">
@@ -59,9 +69,48 @@ watch([locale, () => route.fullPath], () => {
 
 <style>
 :root {
+  --app-bg: #f5f7fa;
+  --app-surface: #ffffff;
+  --app-text: #303133;
+  --app-muted: #606266;
+  --app-faint: #909399;
+  --app-border: #ebeef5;
+  --app-accent: #409eff;
+  --app-accent-soft: #ecf5ff;
+  --app-hover: #c6e2ff;
+  --app-shadow: 0 4px 16px rgb(64 158 255 / 8%);
+  --app-dashed: #dcdfe6;
+  --app-checker: #f0f0f0;
+  --app-overlay: rgb(255 255 255 / 86%);
+  --app-warn: #e6a23c;
+  --app-ok: #67c23a;
+  --app-code: #c0c4cc;
+  --app-crop-fill: rgb(64 158 255 / 12%);
   font-family: system-ui, sans-serif;
-  color: #303133;
-  background: #f5f7fa;
+  color: var(--app-text);
+  background: var(--app-bg);
+  color-scheme: light;
+}
+
+html.dark {
+  --app-bg: #0f0f0f;
+  --app-surface: #1d1e1f;
+  --app-text: #e5eaf3;
+  --app-muted: #a3a6ad;
+  --app-faint: #8d9095;
+  --app-border: #363637;
+  --app-accent: #409eff;
+  --app-accent-soft: #18222c;
+  --app-hover: #409eff;
+  --app-shadow: 0 4px 16px rgb(0 0 0 / 35%);
+  --app-dashed: #4c4d4f;
+  --app-checker: #2a2a2a;
+  --app-overlay: rgb(29 30 31 / 86%);
+  --app-warn: #e6a23c;
+  --app-ok: #67c23a;
+  --app-code: #6c6e72;
+  --app-crop-fill: rgb(64 158 255 / 18%);
+  color-scheme: dark;
 }
 
 html,
@@ -90,14 +139,15 @@ body {
 
 .app-header {
   flex-shrink: 0;
-  height: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 24px;
-  background: #fff;
-  border-bottom: 1px solid #ebeef5;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 8px 24px;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
   z-index: 10;
 }
 
@@ -129,7 +179,7 @@ body {
 
 .page-title {
   margin: 0;
-  color: #606266;
+  color: var(--app-muted);
   font-size: 14px;
   font-weight: 500;
 }
@@ -138,13 +188,13 @@ body {
   max-width: 1280px;
   margin: 0 auto;
   padding: 16px 24px 0;
-  color: #606266;
+  color: var(--app-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
 .home-link {
-  color: #409eff;
+  color: var(--app-accent);
   font-size: 14px;
   text-decoration: none;
 }
@@ -164,22 +214,22 @@ body {
   border: 0;
   border-radius: 4px;
   background: transparent;
-  color: #909399;
+  color: var(--app-faint);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
 }
 
 .lang button[aria-pressed='true'] {
-  background: #ecf5ff;
-  color: #409eff;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
 }
 
 .app-footer {
   flex-shrink: 0;
-  border-top: 1px solid #ebeef5;
-  background: #fff;
-  color: #909399;
+  border-top: 1px solid var(--app-border);
+  background: var(--app-surface);
+  color: var(--app-faint);
   font-size: 13px;
   z-index: 10;
 }
@@ -197,13 +247,13 @@ body {
 }
 
 .footer-nav a {
-  color: #606266;
+  color: var(--app-muted);
   text-decoration: none;
 }
 
 .footer-nav a:hover,
 .footer-nav a.router-link-active {
-  color: #409eff;
+  color: var(--app-accent);
 }
 
 @media (max-width: 767px) {

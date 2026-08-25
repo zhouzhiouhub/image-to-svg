@@ -217,8 +217,8 @@ onUnmounted(() => {
   position: absolute;
   z-index: 2;
   box-sizing: border-box;
-  border: 2px solid #409eff;
-  background: rgb(64 158 255 / 12%);
+  border: 2px solid var(--app-accent);
+  background: var(--app-crop-fill);
   box-shadow: 0 0 0 9999px rgb(0 0 0 / 40%);
   cursor: move;
 }
@@ -228,8 +228,8 @@ onUnmounted(() => {
   z-index: 3;
   width: 10px;
   height: 10px;
-  background: #fff;
-  border: 1px solid #409eff;
+  background: var(--app-surface);
+  border: 1px solid var(--app-accent);
 }
 
 .nw {

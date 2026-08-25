@@ -1,5 +1,6 @@
 export const zh = {
   lang: { label: '语言', zh: '中文', en: 'English' },
+  theme: { label: '主题', light: '浅色', dark: '深色' },
   nav: {
     home: '返回首页',
     tools: '功能导航',

@@ -151,17 +151,17 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px 16px;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 8px;
-  color: #909399;
+  color: var(--app-faint);
   font-size: 13px;
 }
 
 .warn {
-  color: #e6a23c;
+  color: var(--app-warn);
 }
 
 .ok {
-  color: #67c23a;
+  color: var(--app-ok);
 }
 </style>

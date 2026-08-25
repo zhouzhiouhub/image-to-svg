@@ -232,7 +232,7 @@ function syncFromHeight(value: number | undefined) {
 <style scoped>
 .panel {
   padding: 16px;
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -251,7 +251,7 @@ h2 {
 
 p {
   margin: 0;
-  color: #909399;
+  color: var(--app-faint);
   font-size: 13px;
 }
 
@@ -269,7 +269,7 @@ p {
   width: 36px;
   flex-shrink: 0;
   font-size: 13px;
-  color: #606266;
+  color: var(--app-muted);
 }
 
 .row :deep(.el-slider) {

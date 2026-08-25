@@ -36,7 +36,7 @@ h2 {
 
 p {
   margin: 0;
-  color: #606266;
+  color: var(--app-muted);
   line-height: 1.7;
 }
 

@@ -50,7 +50,7 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 .hero p {
   margin: 0;
   max-width: 640px;
-  color: #606266;
+  color: var(--app-muted);
   line-height: 1.6;
 }
 
@@ -77,8 +77,8 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  background: #fff;
-  border: 1px solid #ebeef5;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   border-radius: 8px;
   color: inherit;
   text-decoration: none;
@@ -88,8 +88,8 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 }
 
 .card:hover {
-  border-color: #c6e2ff;
-  box-shadow: 0 4px 16px rgb(64 158 255 / 8%);
+  border-color: var(--app-hover);
+  box-shadow: var(--app-shadow);
 }
 
 .card-top {
@@ -108,14 +108,14 @@ const tagType: Record<ToolStatus, 'success' | 'warning' | 'info'> = {
 .card p {
   margin: 0;
   flex: 1;
-  color: #606266;
+  color: var(--app-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
 .action {
   font-size: 13px;
-  color: #409eff;
+  color: var(--app-accent);
 }
 
 @media (max-width: 767px) {

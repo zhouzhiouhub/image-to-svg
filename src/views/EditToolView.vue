@@ -319,14 +319,14 @@ function onReplace() {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  color: #909399;
+  color: var(--app-faint);
   overflow: hidden;
-  background-color: #fff;
+  background-color: var(--app-surface);
   background-image:
-    linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+    linear-gradient(45deg, var(--app-checker) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--app-checker) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--app-checker) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--app-checker) 75%);
   background-size: 16px 16px;
   background-position:
     0 0,

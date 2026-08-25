@@ -53,7 +53,7 @@ const emit = defineEmits<{
 <style scoped>
 .list {
   padding: 16px;
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 8px;
 }
 
@@ -63,13 +63,13 @@ header {
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
-  color: #909399;
+  color: var(--app-faint);
   font-size: 13px;
 }
 
 .empty {
   margin: 0;
-  color: #909399;
+  color: var(--app-faint);
   font-size: 13px;
 }
 
@@ -89,7 +89,7 @@ li {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 0;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--app-border);
 }
 
 li:first-child {
@@ -104,11 +104,11 @@ li:first-child {
   gap: 8px 12px;
   min-width: 0;
   font-size: 13px;
-  color: #909399;
+  color: var(--app-faint);
 }
 
 .meta strong {
-  color: #303133;
+  color: var(--app-text);
   font-weight: 600;
   word-break: break-all;
 }
@@ -119,6 +119,6 @@ li:first-child {
 }
 
 .warn {
-  color: #e6a23c;
+  color: var(--app-warn);
 }
 </style>

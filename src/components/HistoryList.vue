@@ -75,7 +75,7 @@ function downloadRaster(record: (typeof records.value)[number]) {
   max-width: 1280px;
   margin: 0 auto 24px;
   padding: 16px;
-  background: #fff;
+  background: var(--app-surface);
   border-radius: 8px;
 }
 
@@ -94,7 +94,7 @@ h2 {
 
 .hint {
   margin: 4px 0 0;
-  color: #909399;
+  color: var(--app-faint);
   font-size: 12px;
 }
 
@@ -113,7 +113,7 @@ li {
   align-items: center;
   gap: 12px;
   padding: 8px 0;
-  border-top: 1px solid #ebeef5;
+  border-top: 1px solid var(--app-border);
 }
 
 li:first-child {
@@ -125,7 +125,7 @@ img {
   width: 48px;
   height: 48px;
   object-fit: contain;
-  background: #f5f7fa;
+  background: var(--app-bg);
   border-radius: 4px;
 }
 
@@ -136,11 +136,11 @@ img {
   gap: 2px;
   min-width: 160px;
   font-size: 13px;
-  color: #909399;
+  color: var(--app-faint);
 }
 
 .meta strong {
-  color: #303133;
+  color: var(--app-text);
   font-weight: 600;
   word-break: break-all;
 }

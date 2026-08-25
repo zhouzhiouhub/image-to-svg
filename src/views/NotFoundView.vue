@@ -26,7 +26,7 @@ import { t } from '@/i18n'
 
 .code {
   margin: 0 0 8px;
-  color: #c0c4cc;
+  color: var(--app-code);
   font-size: 13px;
   letter-spacing: 0.08em;
 }
@@ -39,7 +39,7 @@ h1 {
 
 p {
   margin: 0;
-  color: #606266;
+  color: var(--app-muted);
   line-height: 1.6;
 }
 
@@ -51,7 +51,7 @@ p {
 }
 
 .links a {
-  color: #409eff;
+  color: var(--app-accent);
   text-decoration: none;
 }
 

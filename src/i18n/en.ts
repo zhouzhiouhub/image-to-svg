@@ -1,5 +1,6 @@
 export const en = {
   lang: { label: 'Language', zh: '中文', en: 'English' },
+  theme: { label: 'Theme', light: 'Light', dark: 'Dark' },
   nav: {
     home: 'Home',
     tools: 'Tools',

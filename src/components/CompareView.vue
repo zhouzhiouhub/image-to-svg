@@ -41,11 +41,11 @@ defineProps<{
   align-items: center;
   justify-content: center;
   min-height: 280px;
-  background: #fff;
-  border: 1px dashed #dcdfe6;
+  background: var(--app-surface);
+  border: 1px dashed var(--app-dashed);
   border-radius: 8px;
   overflow: hidden;
-  color: #909399;
+  color: var(--app-faint);
 }
 
 .pane img {
@@ -64,7 +64,7 @@ defineProps<{
   bottom: 12px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgb(255 255 255 / 86%);
+  background: var(--app-overlay);
   font-size: 12px;
 }
 
