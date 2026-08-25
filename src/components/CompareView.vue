@@ -2,6 +2,8 @@
 defineProps<{
   originalUrl?: string | null
   originalName?: string
+  resultUrl?: string | null
+  converting?: boolean
 }>()
 </script>
 
@@ -12,7 +14,9 @@ defineProps<{
       <span v-else>原图预览</span>
     </div>
     <div class="pane">
-      <span>结果预览</span>
+      <span v-if="converting">转换中…</span>
+      <img v-else-if="resultUrl" :src="resultUrl" alt="SVG 结果" />
+      <span v-else>结果预览</span>
     </div>
   </section>
 </template>

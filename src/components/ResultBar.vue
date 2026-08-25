@@ -4,6 +4,7 @@ import { formatBytes } from '@/utils/format'
 
 defineProps<{
   source?: AcceptedFile | null
+  svg?: string | null
 }>()
 </script>
 
@@ -13,7 +14,7 @@ defineProps<{
       <span>{{ source.file.name }}</span>
       <span>{{ source.kind === 'svg' ? 'SVG → 位图' : '位图 → SVG' }}</span>
       <span>{{ formatBytes(source.file.size) }}</span>
-      <span v-if="source.width && source.height">{{ source.width }} × {{ source.height }}</span>
+      <span v-if="svg">已生成 SVG</span>
     </template>
     <span v-else>指标与下载（待接入）</span>
   </section>

@@ -1,13 +1,16 @@
 <script setup lang="ts">
 defineProps<{
   disabled?: boolean
+  loading?: boolean
 }>()
 </script>
 
 <template>
   <section class="panel" :class="{ disabled }">
     <h2>转换参数</h2>
-    <p>{{ disabled ? '请先上传位图后再调节描摹参数' : '位图描摹参数（待接入）' }}</p>
+    <p v-if="disabled">请先上传位图后再调节描摹参数</p>
+    <p v-else-if="loading">正在描摹为 SVG…</p>
+    <p v-else>已使用默认参数进行黑白描摹</p>
   </section>
 </template>
 
