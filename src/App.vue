@@ -8,15 +8,25 @@ import RasterParamPanel from '@/components/RasterParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { useTrace } from '@/composables/useTrace'
+import { useRasterize } from '@/composables/useRasterize'
+import type { RasterOptions } from '@/utils/svgRaster'
 
 const title = import.meta.env.VITE_APP_TITLE ?? '图片转SVG工具'
 const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
 const resultSvg = ref<string | null>(null)
+const resultBlob = ref<Blob | null>(null)
 const resultUrl = ref<string | null>(null)
 const converting = ref(false)
+const rasterOptions = ref<RasterOptions>({
+  type: 'image/png',
+  scale: 2,
+  quality: 0.92,
+})
 const { trace } = useTrace()
+const { rasterize } = useRasterize()
 let traceSeq = 0
+let rasterSeq = 0
 
 const showTrace = computed(() => !source.value || source.value.kind === 'raster')
 const showRaster = computed(() => !source.value || source.value.kind === 'svg')
@@ -31,19 +41,26 @@ watch(source, (value, _prev, onCleanup) => {
   onCleanup(() => URL.revokeObjectURL(url))
 })
 
-watch(resultSvg, (value, _prev, onCleanup) => {
-  if (!value) {
-    resultUrl.value = null
+watch([resultSvg, resultBlob], ([svg, blob], _prev, onCleanup) => {
+  if (svg) {
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }))
+    resultUrl.value = url
+    onCleanup(() => URL.revokeObjectURL(url))
     return
   }
-  const url = URL.createObjectURL(new Blob([value], { type: 'image/svg+xml;charset=utf-8' }))
-  resultUrl.value = url
-  onCleanup(() => URL.revokeObjectURL(url))
+  if (blob) {
+    const url = URL.createObjectURL(blob)
+    resultUrl.value = url
+    onCleanup(() => URL.revokeObjectURL(url))
+    return
+  }
+  resultUrl.value = null
 })
 
 watch(source, async (value) => {
   const seq = ++traceSeq
   resultSvg.value = null
+  resultBlob.value = null
   if (!value || value.kind !== 'raster') return
 
   converting.value = true
@@ -59,6 +76,26 @@ watch(source, async (value) => {
     ElMessage.error('转换失败，请换一张静态小图标后重试')
   } finally {
     if (seq === traceSeq) converting.value = false
+  }
+})
+
+watch([source, rasterOptions], async () => {
+  const value = source.value
+  const seq = ++rasterSeq
+  if (!value || value.kind !== 'svg') return
+
+  converting.value = true
+  resultBlob.value = null
+  try {
+    const svgText = await value.file.text()
+    const blob = await rasterize(svgText, rasterOptions.value)
+    if (seq !== rasterSeq) return
+    resultBlob.value = blob
+  } catch (error) {
+    if (seq !== rasterSeq) return
+    ElMessage.error(error instanceof Error ? error.message : '导出失败')
+  } finally {
+    if (seq === rasterSeq) converting.value = false
   }
 })
 
@@ -82,7 +119,12 @@ function onAccepted(payload: AcceptedFile) {
         <UploadPanel @accepted="onAccepted" />
         <aside class="app-params">
           <TraceParamPanel v-if="showTrace" :disabled="!source" :loading="converting" />
-          <RasterParamPanel v-if="showRaster" :disabled="!source" />
+          <RasterParamPanel
+            v-if="showRaster"
+            :disabled="!source"
+            :loading="converting"
+            @change="rasterOptions = $event"
+          />
         </aside>
       </section>
       <CompareView
@@ -91,7 +133,12 @@ function onAccepted(payload: AcceptedFile) {
         :result-url="resultUrl"
         :converting="converting"
       />
-      <ResultBar :source="source" :svg="resultSvg" />
+      <ResultBar
+        :source="source"
+        :svg="resultSvg"
+        :raster-blob="resultBlob"
+        :raster-type="rasterOptions.type"
+      />
     </main>
   </div>
 </template>

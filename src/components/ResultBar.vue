@@ -3,19 +3,34 @@ import { computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import { formatBytes } from '@/utils/format'
+import type { RasterFormat } from '@/utils/svgRaster'
 
 const props = defineProps<{
   source?: AcceptedFile | null
   svg?: string | null
+  rasterBlob?: Blob | null
+  rasterType?: RasterFormat
 }>()
 
 const pathCount = computed(() => props.svg?.match(/<path\b/gi)?.length ?? 0)
 const svgBytes = computed(() => (props.svg ? new Blob([props.svg]).size : 0))
-const larger = computed(() => !!props.source && svgBytes.value > props.source.file.size)
+const rasterBytes = computed(() => props.rasterBlob?.size ?? 0)
+const larger = computed(() => {
+  if (!props.source) return false
+  if (props.svg) return svgBytes.value > props.source.file.size
+  if (props.rasterBlob) return rasterBytes.value > props.source.file.size
+  return false
+})
 
 function fileStem() {
   const name = props.source?.file.name ?? 'result'
   return name.replace(/\.[^.]+$/, '') || 'result'
+}
+
+function rasterExt() {
+  if (props.rasterType === 'image/jpeg') return 'jpg'
+  if (props.rasterType === 'image/webp') return 'webp'
+  return 'png'
 }
 
 async function copySvg() {
@@ -28,14 +43,23 @@ async function copySvg() {
   }
 }
 
-function downloadSvg() {
-  if (!props.svg) return
-  const url = URL.createObjectURL(new Blob([props.svg], { type: 'image/svg+xml;charset=utf-8' }))
+function download(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `${fileStem()}.svg`
+  link.download = filename
   link.click()
   URL.revokeObjectURL(url)
+}
+
+function downloadSvg() {
+  if (!props.svg) return
+  download(new Blob([props.svg], { type: 'image/svg+xml;charset=utf-8' }), `${fileStem()}.svg`)
+}
+
+function downloadRaster() {
+  if (!props.rasterBlob) return
+  download(props.rasterBlob, `${fileStem()}.${rasterExt()}`)
 }
 </script>
 
@@ -51,6 +75,10 @@ function downloadSvg() {
         <span>路径 {{ pathCount }}</span>
         <el-button size="small" type="primary" @click="downloadSvg">下载 SVG</el-button>
         <el-button size="small" @click="copySvg">复制代码</el-button>
+      </template>
+      <template v-else-if="rasterBlob">
+        <span :class="{ warn: larger }">结果 {{ formatBytes(rasterBytes) }}</span>
+        <el-button size="small" type="primary" @click="downloadRaster">下载 {{ rasterExt().toUpperCase() }}</el-button>
       </template>
     </template>
     <span v-else>指标与下载（待接入）</span>
