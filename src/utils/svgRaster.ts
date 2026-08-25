@@ -1,4 +1,5 @@
 import { MAX_EDGE_PX, type InputKind } from '@/types/input'
+import { knockoutWhiteBackground } from '@/utils/knockoutWhite'
 
 export type RasterFormat = 'image/png' | 'image/jpeg' | 'image/webp'
 
@@ -7,6 +8,7 @@ export type RasterOptions = {
   quality: number
   scale: number
   background?: string
+  knockoutWhite?: boolean
 }
 
 export type ResizeFit = 'contain' | 'cover' | 'stretch'
@@ -18,6 +20,7 @@ export type ResizeOptions = {
   height: number
   fit: ResizeFit
   background?: string
+  knockoutWhite?: boolean
 }
 
 export type RasterizeResult = {
@@ -105,7 +108,7 @@ function drawSource(
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) throw new Error('导出失败')
   if (background) {
     ctx.fillStyle = background
@@ -127,7 +130,7 @@ function drawFitted(
   const canvas = document.createElement('canvas')
   canvas.width = destWidth
   canvas.height = destHeight
-  const ctx = canvas.getContext('2d')
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) throw new Error('导出失败')
   ctx.imageSmoothingEnabled = true
   ctx.imageSmoothingQuality = 'high'
@@ -168,6 +171,16 @@ async function encodeCanvas(
   }
 }
 
+async function finishCanvas(
+  canvas: HTMLCanvasElement,
+  options: { type: RasterFormat; quality: number; knockoutWhite?: boolean },
+) {
+  if (options.knockoutWhite && options.type !== 'image/jpeg') {
+    knockoutWhiteBackground(canvas)
+  }
+  return encodeCanvas(canvas, options)
+}
+
 export async function rasterizeSvgText(svgText: string, options: RasterOptions): Promise<RasterizeResult> {
   const size = parseSvgSize(svgText)
   const output = scaledCanvasSize(size.width, size.height, options.scale)
@@ -184,7 +197,7 @@ export async function rasterizeSvgText(svgText: string, options: RasterOptions):
     })
 
     const canvas = drawSource(img, output.width, output.height, resolveBackground(options))
-    const encoded = await encodeCanvas(canvas, options)
+    const encoded = await finishCanvas(canvas, options)
     return {
       ...encoded,
       width: output.width,
@@ -206,7 +219,7 @@ export async function rasterizeBitmapFile(file: File, options: RasterOptions): P
   try {
     const output = scaledCanvasSize(bitmap.width, bitmap.height, options.scale)
     const canvas = drawSource(bitmap, output.width, output.height, resolveBackground(options))
-    const encoded = await encodeCanvas(canvas, options)
+    const encoded = await finishCanvas(canvas, options)
     return {
       ...encoded,
       width: output.width,
@@ -277,7 +290,7 @@ export async function rasterizeToSize(
       options.fit,
       resolveBackground(options),
     )
-    const encoded = await encodeCanvas(canvas, options)
+    const encoded = await finishCanvas(canvas, options)
     return {
       ...encoded,
       width: output.width,

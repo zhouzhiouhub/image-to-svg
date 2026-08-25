@@ -3,6 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import { MAX_EDGE_PX } from '@/types/input'
 import type { RasterFormat, ResizeFit, ResizeOptions } from '@/utils/svgRaster'
 import { rasterTypeFromFormat } from '@/utils/svgRaster'
+import { isOpaqueRasterSource } from '@/utils/knockoutWhite'
 
 const props = defineProps<{
   disabled?: boolean
@@ -33,6 +34,13 @@ let lockedRatio = 1
 const jpegLocked = computed(() => form.type === 'image/jpeg')
 const showFit = computed(() => form.mode === 'pixel' && !form.lockRatio)
 const showBackground = computed(() => !jpegLocked.value && showFit.value && form.fit === 'contain')
+const knockoutWhite = computed(
+  () =>
+    !jpegLocked.value &&
+    form.background === 'transparent' &&
+    isOpaqueRasterSource(props.sourceFormat) &&
+    showBackground.value,
+)
 const maxPercent = computed(() => {
   const edge = Math.max(props.sourceWidth ?? 1, props.sourceHeight ?? 1)
   return Math.max(1, Math.min(200, Math.floor((MAX_EDGE_PX / edge) * 100)))
@@ -55,6 +63,7 @@ const options = computed<ResizeOptions>(() => ({
   height: outputSize.value.height,
   fit: form.mode === 'percent' || form.lockRatio ? 'stretch' : form.fit,
   background: jpegLocked.value || form.background === 'white' ? '#ffffff' : undefined,
+  knockoutWhite: knockoutWhite.value,
 }))
 
 const presets = computed(() => {

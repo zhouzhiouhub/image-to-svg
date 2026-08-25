@@ -145,6 +145,7 @@ function onRasterChange(options: RasterOptions) {
       :initial-scale="1"
       :disabled="!source"
       :loading="converting"
+      :source-format="source?.format"
       @change="onRasterChange"
     />
     <ResultBar

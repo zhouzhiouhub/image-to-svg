@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import type { RasterFormat, RasterOptions } from '@/utils/svgRaster'
+import { isOpaqueRasterSource } from '@/utils/knockoutWhite'
 
 const props = withDefaults(
   defineProps<{
@@ -10,6 +11,7 @@ const props = withDefaults(
     emptyText?: string
     loadingText?: string
     initialScale?: number
+    sourceFormat?: string
   }>(),
   {
     title: '转换参数',
@@ -31,12 +33,19 @@ const form = reactive({
 })
 
 const jpegLocked = computed(() => form.type === 'image/jpeg')
+const knockoutWhite = computed(
+  () =>
+    !jpegLocked.value &&
+    form.background === 'transparent' &&
+    isOpaqueRasterSource(props.sourceFormat),
+)
 
 const options = computed<RasterOptions>(() => ({
   type: form.type,
   scale: form.scale,
   quality: form.quality,
   background: jpegLocked.value || form.background === 'white' ? '#ffffff' : undefined,
+  knockoutWhite: knockoutWhite.value,
 }))
 
 watch(
@@ -78,6 +87,7 @@ watch(
           <el-radio-button value="white">白色</el-radio-button>
         </el-radio-group>
       </div>
+      <p v-if="knockoutWhite" class="hint">会把图片边缘的白底抠成透明。</p>
     </template>
   </section>
 </template>
@@ -106,6 +116,10 @@ p {
   margin: 0;
   color: #909399;
   font-size: 13px;
+}
+
+.hint {
+  line-height: 1.5;
 }
 
 .row {
