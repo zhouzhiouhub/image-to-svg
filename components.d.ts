@@ -13,6 +13,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     CompareView: typeof import('./src/components/CompareView.vue')['default']
     CompressParamPanel: typeof import('./src/components/CompressParamPanel.vue')['default']
+    CropEditor: typeof import('./src/components/CropEditor.vue')['default']
+    CropParamPanel: typeof import('./src/components/CropParamPanel.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElRadioButton: typeof import('element-plus/es')['ElRadioButton']
@@ -26,6 +28,7 @@ declare module 'vue' {
     ResizeParamPanel: typeof import('./src/components/ResizeParamPanel.vue')['default']
     ResultBar: typeof import('./src/components/ResultBar.vue')['default']
     TraceParamPanel: typeof import('./src/components/TraceParamPanel.vue')['default']
+    TransformParamPanel: typeof import('./src/components/TransformParamPanel.vue')['default']
     UploadPanel: typeof import('./src/components/UploadPanel.vue')['default']
   }
 }

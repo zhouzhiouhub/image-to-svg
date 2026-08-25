@@ -73,6 +73,14 @@ export const toolGroups: ToolGroup[] = [
         status: 'available',
         statusLabel: '可用',
       },
+      {
+        id: 'crop',
+        to: '/crop',
+        title: '图片裁剪',
+        description: '在原图上框选区域后导出，可锁定 1:1、4:3、16:9 比例。',
+        status: 'available',
+        statusLabel: '可用',
+      },
     ],
   },
 ]

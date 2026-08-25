@@ -5,6 +5,7 @@ import FormatToolView from '@/views/FormatToolView.vue'
 import ResizeToolView from '@/views/ResizeToolView.vue'
 import CompressToolView from '@/views/CompressToolView.vue'
 import TransformToolView from '@/views/TransformToolView.vue'
+import CropToolView from '@/views/CropToolView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +59,12 @@ const router = createRouter({
       name: 'rotate',
       component: TransformToolView,
       meta: { title: '旋转与翻转' },
+    },
+    {
+      path: '/crop',
+      name: 'crop',
+      component: CropToolView,
+      meta: { title: '图片裁剪' },
     },
     {
       path: '/app',
