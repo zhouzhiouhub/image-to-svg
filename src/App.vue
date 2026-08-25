@@ -22,7 +22,7 @@ watch([locale, () => route.fullPath], () => {
 </script>
 
 <template>
-  <div class="app">
+  <div class="app" :class="theme">
     <header class="app-header">
       <RouterLink class="brand" to="/">
         <img :src="favicon" alt="Kinolin Tool" width="28" height="28" />
@@ -69,48 +69,7 @@ watch([locale, () => route.fullPath], () => {
 
 <style>
 :root {
-  --app-bg: #f5f7fa;
-  --app-surface: #ffffff;
-  --app-text: #303133;
-  --app-muted: #606266;
-  --app-faint: #909399;
-  --app-border: #ebeef5;
-  --app-accent: #409eff;
-  --app-accent-soft: #ecf5ff;
-  --app-hover: #c6e2ff;
-  --app-shadow: 0 4px 16px rgb(64 158 255 / 8%);
-  --app-dashed: #dcdfe6;
-  --app-checker: #f0f0f0;
-  --app-overlay: rgb(255 255 255 / 86%);
-  --app-warn: #e6a23c;
-  --app-ok: #67c23a;
-  --app-code: #c0c4cc;
-  --app-crop-fill: rgb(64 158 255 / 12%);
   font-family: system-ui, sans-serif;
-  color: var(--app-text);
-  background: var(--app-bg);
-  color-scheme: light;
-}
-
-html.dark {
-  --app-bg: #0f0f0f;
-  --app-surface: #1d1e1f;
-  --app-text: #e5eaf3;
-  --app-muted: #a3a6ad;
-  --app-faint: #8d9095;
-  --app-border: #363637;
-  --app-accent: #409eff;
-  --app-accent-soft: #18222c;
-  --app-hover: #409eff;
-  --app-shadow: 0 4px 16px rgb(0 0 0 / 35%);
-  --app-dashed: #4c4d4f;
-  --app-checker: #2a2a2a;
-  --app-overlay: rgb(29 30 31 / 86%);
-  --app-warn: #e6a23c;
-  --app-ok: #67c23a;
-  --app-code: #6c6e72;
-  --app-crop-fill: rgb(64 158 255 / 18%);
-  color-scheme: dark;
 }
 
 html,
@@ -146,7 +105,7 @@ body {
   flex-wrap: wrap;
   gap: 8px 16px;
   padding: 8px 24px;
-  background: var(--app-surface);
+  background-color: var(--app-surface);
   border-bottom: 1px solid var(--app-border);
   z-index: 10;
 }
@@ -228,8 +187,8 @@ body {
 .app-footer {
   flex-shrink: 0;
   border-top: 1px solid var(--app-border);
-  background: var(--app-surface);
-  color: var(--app-faint);
+  background-color: var(--app-surface);
+  color: var(--app-muted);
   font-size: 13px;
   z-index: 10;
 }

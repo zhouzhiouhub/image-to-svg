@@ -23,8 +23,10 @@ export function detectTheme(): Theme {
 
 export function applyTheme(next: Theme) {
   if (typeof document === 'undefined') return
-  document.documentElement.classList.toggle('dark', next === 'dark')
-  document.documentElement.style.colorScheme = next
+  const root = document.documentElement
+  root.classList.toggle('dark', next === 'dark')
+  root.style.colorScheme = next
+  document.body?.classList.toggle('dark', next === 'dark')
   const meta = document.head.querySelector('meta[name="theme-color"]')
   if (meta) meta.setAttribute('content', next === 'dark' ? '#0f0f0f' : '#ffffff')
 }

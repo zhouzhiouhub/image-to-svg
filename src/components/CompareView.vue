@@ -41,7 +41,7 @@ defineProps<{
   align-items: center;
   justify-content: center;
   min-height: 280px;
-  background: var(--app-surface);
+  background-color: var(--app-bg);
   border: 1px dashed var(--app-dashed);
   border-radius: 8px;
   overflow: hidden;

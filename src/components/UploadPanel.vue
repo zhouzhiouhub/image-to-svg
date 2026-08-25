@@ -155,6 +155,8 @@ defineExpose({ acceptFile })
   align-items: center;
   justify-content: center;
   padding: 24px;
+  background-color: var(--app-surface);
+  border-color: var(--app-dashed);
 }
 
 .title {

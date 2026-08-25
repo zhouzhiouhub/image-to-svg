@@ -1,0 +1,106 @@
+:root {
+  --app-bg: #f5f7fa;
+  --app-surface: #ffffff;
+  --app-text: #303133;
+  --app-muted: #606266;
+  --app-faint: #909399;
+  --app-border: #ebeef5;
+  --app-accent: #409eff;
+  --app-accent-soft: #ecf5ff;
+  --app-hover: #c6e2ff;
+  --app-shadow: 0 4px 16px rgb(64 158 255 / 8%);
+  --app-dashed: #dcdfe6;
+  --app-checker: #f0f0f0;
+  --app-overlay: rgb(255 255 255 / 86%);
+  --app-warn: #e6a23c;
+  --app-ok: #67c23a;
+  --app-code: #c0c4cc;
+  --app-crop-fill: rgb(64 158 255 / 12%);
+  color-scheme: light;
+}
+
+html.dark,
+html.dark:root,
+body.dark,
+.app.dark {
+  --app-bg: #0f0f0f;
+  --app-surface: #1d1e1f;
+  --app-text: #e5eaf3;
+  --app-muted: #a3a6ad;
+  --app-faint: #8d9095;
+  --app-border: #363637;
+  --app-accent: #409eff;
+  --app-accent-soft: #18222c;
+  --app-hover: #409eff;
+  --app-shadow: 0 4px 16px rgb(0 0 0 / 35%);
+  --app-dashed: #4c4d4f;
+  --app-checker: #2a2a2a;
+  --app-overlay: rgb(29 30 31 / 86%);
+  --app-warn: #e6a23c;
+  --app-ok: #67c23a;
+  --app-code: #6c6e72;
+  --app-crop-fill: rgb(64 158 255 / 18%);
+  color-scheme: dark;
+}
+
+html,
+body,
+#app,
+.app {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}
+
+.app-header,
+.app-footer,
+html.dark .app-header,
+html.dark .app-footer,
+.app.dark .app-header,
+.app.dark .app-footer {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+}
+
+html.dark .app .pane,
+.app.dark .pane {
+  background-color: var(--app-bg);
+  color: var(--app-faint);
+}
+
+html.dark .app .bar,
+html.dark .app .panel,
+html.dark .app .list,
+html.dark .app .card,
+.app.dark .bar,
+.app.dark .panel,
+.app.dark .list,
+.app.dark .card {
+  background-color: var(--app-surface);
+  color: var(--app-text);
+}
+
+html.dark .el-upload-dragger,
+.app.dark .el-upload-dragger {
+  background-color: var(--app-surface);
+  border-color: var(--app-dashed);
+}
+
+html.dark .el-upload-dragger:hover,
+.app.dark .el-upload-dragger:hover {
+  border-color: var(--app-accent);
+}
+
+html.dark .el-radio-button__inner,
+html.dark .el-input-number,
+html.dark .el-input-number__wrapper,
+html.dark .el-input__wrapper,
+html.dark .el-textarea__inner,
+html.dark .el-slider__runway,
+.app.dark .el-radio-button__inner,
+.app.dark .el-input-number,
+.app.dark .el-input-number__wrapper,
+.app.dark .el-input__wrapper,
+.app.dark .el-textarea__inner,
+.app.dark .el-slider__runway {
+  background-color: var(--app-surface);
+}
