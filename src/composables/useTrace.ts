@@ -1,33 +1,44 @@
-import type { TraceOptions, TraceRequest, TraceResponse } from '@/types/trace'
+import { init, potrace } from 'esm-potrace-wasm'
+import type { TraceOptions } from '@/types/trace'
+import { drawScaledBitmap, restoreSvgSize, traceEdgeSteps } from '@/utils/traceImage'
+
+let ready: Promise<void> | null = null
+
+function ensureInit() {
+  if (!ready) ready = init()
+  return ready
+}
 
 export function useTrace() {
-  let worker: Worker | null = null
+  async function trace(file: File, options: TraceOptions): Promise<string> {
+    await ensureInit()
+    const bitmap = await createImageBitmap(file)
+    const sourceWidth = bitmap.width
+    const sourceHeight = bitmap.height
+    let lastError: unknown
 
-  function getWorker() {
-    if (!worker) {
-      worker = new Worker(new URL('../workers/trace.worker.ts', import.meta.url), {
-        type: 'module',
-      })
-    }
-    return worker
-  }
-
-  function trace(file: File, options: TraceOptions): Promise<string> {
-    const id = crypto.randomUUID()
-    const current = getWorker()
-
-    return new Promise((resolve, reject) => {
-      const onMessage = (event: MessageEvent<TraceResponse>) => {
-        if (event.data.id !== id) return
-        current.removeEventListener('message', onMessage)
-        if (event.data.type === 'ok') resolve(event.data.svg)
-        else reject(new Error(event.data.message))
+    try {
+      for (const maxEdge of traceEdgeSteps(options.extractcolors)) {
+        const canvas = drawScaledBitmap(bitmap, maxEdge)
+        try {
+          const svg = await potrace(canvas, {
+            turdsize: options.turdsize,
+            extractcolors: options.extractcolors,
+            posterizelevel: options.posterizelevel,
+            alphamax: options.alphamax,
+            opttolerance: options.opttolerance,
+          })
+          const markup = Array.isArray(svg) ? svg.join('') : svg
+          return restoreSvgSize(markup, sourceWidth, sourceHeight, canvas.width, canvas.height)
+        } catch (error) {
+          lastError = error
+        }
       }
+    } finally {
+      bitmap.close()
+    }
 
-      current.addEventListener('message', onMessage)
-      const request: TraceRequest = { type: 'trace', id, file, options }
-      current.postMessage(request)
-    })
+    throw lastError instanceof Error ? lastError : new Error('转换失败')
   }
 
   return { trace }

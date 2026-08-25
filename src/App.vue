@@ -74,9 +74,10 @@ watch([source, traceOptions], async () => {
     const svg = await trace(value.file, traceOptions.value)
     if (seq !== traceSeq) return
     resultSvg.value = svg
-  } catch {
+  } catch (error) {
     if (seq !== traceSeq) return
-    ElMessage.error('转换失败，请换一张静态小图标后重试')
+    const detail = error instanceof Error && error.message ? error.message : ''
+    ElMessage.error(detail ? `转换失败：${detail}` : '转换失败，请换一张更小的静态图标后重试')
   } finally {
     if (seq === traceSeq) converting.value = false
   }
