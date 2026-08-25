@@ -34,6 +34,8 @@ lerna-debug.log*
 Thumbs.db
 Desktop.ini
 .idea/
+.cursor/
+.workbuddy/
 .vscode/*
 !.vscode/extensions.json
 *.suo
