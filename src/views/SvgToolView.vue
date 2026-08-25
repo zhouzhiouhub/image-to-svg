@@ -5,10 +5,13 @@ import { ElMessage } from 'element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import TraceParamPanel from '@/components/TraceParamPanel.vue'
+import RasterParamPanel from '@/components/RasterParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { useTrace } from '@/composables/useTrace'
+import { useRasterize } from '@/composables/useRasterize'
 import type { TraceOptions } from '@/types/trace'
+import type { RasterFormat, RasterOptions } from '@/utils/svgRaster'
 
 const route = useRoute()
 const tool = computed(() => route.meta.tool ?? 'preserve')
@@ -19,6 +22,16 @@ const previewUrl = ref<string | null>(null)
 const resultSvg = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
 const converting = ref(false)
+const exporting = ref(false)
+const rasterBlob = ref<Blob | null>(null)
+const rasterType = ref<RasterFormat>('image/png')
+const rasterWidth = ref<number>()
+const rasterHeight = ref<number>()
+const rasterOptions = ref<RasterOptions>({
+  type: 'image/png',
+  scale: 2,
+  quality: 0.92,
+})
 const traceOptions = ref<TraceOptions>({
   mode: 'preserve',
   turdsize: 8,
@@ -26,7 +39,10 @@ const traceOptions = ref<TraceOptions>({
   posterizelevel: 16,
 })
 const { trace } = useTrace()
+const { rasterizeSvg } = useRasterize()
 let traceSeq = 0
+let exportSeq = 0
+let exportTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(source, (value, _prev, onCleanup) => {
   if (!value) {
@@ -52,8 +68,12 @@ watch([source, traceOptions, tool], async () => {
   const value = source.value
   const seq = ++traceSeq
   resultSvg.value = null
+  rasterBlob.value = null
+  rasterWidth.value = undefined
+  rasterHeight.value = undefined
   if (!value || value.kind !== 'raster') {
     converting.value = false
+    exporting.value = false
     return
   }
 
@@ -73,7 +93,50 @@ watch([source, traceOptions, tool], async () => {
   }
 })
 
+watch([resultSvg, rasterOptions], ([svg]) => {
+  const seq = ++exportSeq
+  if (exportTimer) {
+    clearTimeout(exportTimer)
+    exportTimer = null
+  }
+  if (!svg) {
+    rasterBlob.value = null
+    rasterWidth.value = undefined
+    rasterHeight.value = undefined
+    exporting.value = false
+    return
+  }
+  exporting.value = true
+  exportTimer = setTimeout(() => {
+    void runExport(svg, seq)
+  }, 120)
+})
+
+async function runExport(svg: string, seq: number) {
+  try {
+    const result = await rasterizeSvg(svg, rasterOptions.value)
+    if (seq !== exportSeq) return
+    rasterBlob.value = result.blob
+    rasterType.value = result.type
+    rasterWidth.value = result.width
+    rasterHeight.value = result.height
+    if (result.fallbackToPng) {
+      ElMessage.warning('当前浏览器无法编码 WebP，已改为 PNG')
+    }
+  } catch (error) {
+    if (seq !== exportSeq) return
+    rasterBlob.value = null
+    rasterWidth.value = undefined
+    rasterHeight.value = undefined
+    const detail = error instanceof Error && error.message ? error.message : ''
+    ElMessage.error(detail ? `导出失败：${detail}` : '导出位图失败')
+  } finally {
+    if (seq === exportSeq) exporting.value = false
+  }
+}
+
 onUnmounted(() => {
+  if (exportTimer) clearTimeout(exportTimer)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
 })
@@ -88,6 +151,10 @@ function onReplace() {
 
 function onTraceChange(options: TraceOptions) {
   traceOptions.value = { ...options, mode: traceMode.value }
+}
+
+function onRasterChange(options: RasterOptions) {
+  rasterOptions.value = options
 }
 </script>
 
@@ -112,7 +179,25 @@ function onTraceChange(options: TraceOptions) {
       :loading="converting"
       @change="onTraceChange"
     />
-    <ResultBar :source="source" :svg="resultSvg" @replace="onReplace" />
+    <RasterParamPanel
+      title="再导出为位图"
+      empty-text="转换出 SVG 后可导出 PNG / JPEG / WebP"
+      loading-text="正在导出位图…"
+      :initial-scale="2"
+      :disabled="!resultSvg"
+      :loading="exporting"
+      source-format="svg"
+      @change="onRasterChange"
+    />
+    <ResultBar
+      :source="source"
+      :svg="resultSvg"
+      :raster-blob="rasterBlob"
+      :raster-type="rasterType"
+      :result-width="rasterWidth"
+      :result-height="rasterHeight"
+      @replace="onReplace"
+    />
   </main>
 </template>
 

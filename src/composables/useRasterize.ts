@@ -1,5 +1,6 @@
 import {
   rasterizeInput,
+  rasterizeSvgText,
   rasterizeToSize,
   svgToBlob,
   type RasterOptions,
@@ -39,5 +40,12 @@ export function useRasterize() {
     return compressInput(file, kind, sourceFormat, options)
   }
 
-  return { rasterize, rasterizeFile, resizeFile, compressFile }
+  async function rasterizeSvg(
+    svgText: string,
+    options: RasterOptions,
+  ): Promise<RasterizeResult> {
+    return rasterizeSvgText(svgText, options)
+  }
+
+  return { rasterize, rasterizeFile, rasterizeSvg, resizeFile, compressFile }
 }

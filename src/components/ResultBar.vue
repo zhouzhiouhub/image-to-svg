@@ -98,7 +98,7 @@ function downloadRaster() {
         <el-button size="small" type="primary" @click="downloadSvg">下载 SVG</el-button>
         <el-button size="small" @click="copySvg">复制代码</el-button>
       </template>
-      <template v-else-if="rasterBlob">
+      <template v-if="rasterBlob">
         <span :class="{ warn: larger, ok: savedPercent > 0 }">结果 {{ formatBytes(rasterBytes) }}</span>
         <span v-if="savedPercent > 0">减小 {{ savedPercent }}%</span>
         <span v-else-if="keptOriginal">体积未减小</span>
