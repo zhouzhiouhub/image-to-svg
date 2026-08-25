@@ -40,8 +40,8 @@ watch(
   <section class="panel" :class="{ disabled }">
     <h2>导出参数</h2>
     <p v-if="disabled">请先上传 SVG 后再选择导出格式</p>
-    <p v-else-if="loading">正在导出位图…</p>
     <template v-else>
+      <p v-if="loading">正在导出位图…</p>
       <el-radio-group v-model="form.type" size="small">
         <el-radio-button value="image/png">PNG</el-radio-button>
         <el-radio-button value="image/jpeg">JPEG</el-radio-button>

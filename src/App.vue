@@ -9,6 +9,7 @@ import CompareView from '@/components/CompareView.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import { useTrace } from '@/composables/useTrace'
 import { useRasterize } from '@/composables/useRasterize'
+import type { TraceOptions } from '@/types/trace'
 import type { RasterOptions } from '@/utils/svgRaster'
 
 const title = import.meta.env.VITE_APP_TITLE ?? '图片转SVG工具'
@@ -22,6 +23,10 @@ const rasterOptions = ref<RasterOptions>({
   type: 'image/png',
   scale: 2,
   quality: 0.92,
+})
+const traceOptions = ref<TraceOptions>({
+  turdsize: 2,
+  extractcolors: false,
 })
 const { trace } = useTrace()
 const { rasterize } = useRasterize()
@@ -57,7 +62,8 @@ watch([resultSvg, resultBlob], ([svg, blob], _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch(source, async (value) => {
+watch([source, traceOptions], async () => {
+  const value = source.value
   const seq = ++traceSeq
   resultSvg.value = null
   resultBlob.value = null
@@ -65,10 +71,7 @@ watch(source, async (value) => {
 
   converting.value = true
   try {
-    const svg = await trace(value.file, {
-      turdsize: 2,
-      extractcolors: false,
-    })
+    const svg = await trace(value.file, traceOptions.value)
     if (seq !== traceSeq) return
     resultSvg.value = svg
   } catch {
@@ -118,7 +121,12 @@ function onAccepted(payload: AcceptedFile) {
       <section class="app-setup">
         <UploadPanel @accepted="onAccepted" />
         <aside class="app-params">
-          <TraceParamPanel v-if="showTrace" :disabled="!source" :loading="converting" />
+          <TraceParamPanel
+            v-if="showTrace"
+            :disabled="!source"
+            :loading="converting"
+            @change="traceOptions = $event"
+          />
           <RasterParamPanel
             v-if="showRaster"
             :disabled="!source"
