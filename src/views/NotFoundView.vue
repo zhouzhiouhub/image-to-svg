@@ -19,9 +19,7 @@ import { t } from '@/i18n'
 
 <style scoped>
 .not-found {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 64px 24px;
+  padding: 64px 0;
 }
 
 .code {
@@ -61,7 +59,7 @@ p {
 
 @media (max-width: 767px) {
   .not-found {
-    padding: 32px 16px;
+    padding: 32px 0;
   }
 }
 </style>

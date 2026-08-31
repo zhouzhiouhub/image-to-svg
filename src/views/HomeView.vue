@@ -27,9 +27,7 @@ import { t } from '@/i18n'
 
 <style scoped>
 .home {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 40px 24px 24px;
+  padding: 40px 0 24px;
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -137,7 +135,7 @@ import { t } from '@/i18n'
 
 @media (max-width: 767px) {
   .home {
-    padding: 24px 16px 16px;
+    padding: 24px 0 16px;
   }
 
   .hero h1 {

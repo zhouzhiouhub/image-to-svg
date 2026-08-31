@@ -17,9 +17,7 @@ import { t } from '@/i18n'
 
 <style scoped>
 .privacy {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 40px 24px 32px;
+  padding: 40px 0 32px;
 }
 
 h1 {
@@ -42,7 +40,7 @@ p {
 
 @media (max-width: 767px) {
   .privacy {
-    padding: 24px 16px 16px;
+    padding: 24px 0 16px;
   }
 
   h1 {

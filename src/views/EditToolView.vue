@@ -299,9 +299,7 @@ function onReplace() {
 
 <style scoped>
 .tool {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px;
+  padding: 24px 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -348,7 +346,7 @@ function onReplace() {
 
 @media (max-width: 767px) {
   .tool {
-    padding: 16px;
+    padding: 16px 0;
   }
 
   .compare {

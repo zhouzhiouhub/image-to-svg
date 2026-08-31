@@ -41,40 +41,44 @@ function downloadRaster(record: (typeof records.value)[number]) {
 </script>
 
 <template>
-  <section v-if="records.length" class="panel">
-    <header>
-      <div>
-        <h2>{{ t('history.title') }}</h2>
-        <p class="hint">{{ t('history.hint') }}</p>
-      </div>
-      <el-button size="small" @click="clearHistory">{{ t('history.clear') }}</el-button>
-    </header>
-    <ul>
-      <li v-for="item in records" :key="item.id">
-        <img :src="item.previewUrl" :alt="item.sourceName" />
-        <div class="meta">
-          <strong>{{ item.sourceName }}</strong>
-          <span>{{ item.title }}{{ item.pipeline ? ` · ${item.pipeline}` : '' }}</span>
-          <span v-if="item.rasterBlob">{{ formatBytes(item.rasterBlob.size) }}</span>
+  <section v-if="records.length" class="history">
+    <div class="panel">
+      <header>
+        <div>
+          <h2>{{ t('history.title') }}</h2>
+          <p class="hint">{{ t('history.hint') }}</p>
         </div>
-        <div class="actions">
-          <el-button v-if="item.svg" size="small" @click="downloadSvg(item.svg, item.sourceName)">
-            SVG
-          </el-button>
-          <el-button v-if="item.rasterBlob" size="small" type="primary" @click="downloadRaster(item)">
-            {{ t('history.download') }}
-          </el-button>
-          <el-button size="small" @click="removeHistory(item.id)">{{ t('history.remove') }}</el-button>
-        </div>
-      </li>
-    </ul>
+        <el-button size="small" @click="clearHistory">{{ t('history.clear') }}</el-button>
+      </header>
+      <ul>
+        <li v-for="item in records" :key="item.id">
+          <img :src="item.previewUrl" :alt="item.sourceName" />
+          <div class="meta">
+            <strong>{{ item.sourceName }}</strong>
+            <span>{{ item.title }}{{ item.pipeline ? ` · ${item.pipeline}` : '' }}</span>
+            <span v-if="item.rasterBlob">{{ formatBytes(item.rasterBlob.size) }}</span>
+          </div>
+          <div class="actions">
+            <el-button v-if="item.svg" size="small" @click="downloadSvg(item.svg, item.sourceName)">
+              SVG
+            </el-button>
+            <el-button v-if="item.rasterBlob" size="small" type="primary" @click="downloadRaster(item)">
+              {{ t('history.download') }}
+            </el-button>
+            <el-button size="small" @click="removeHistory(item.id)">{{ t('history.remove') }}</el-button>
+          </div>
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
 
 <style scoped>
+.history {
+  padding-bottom: 24px;
+}
+
 .panel {
-  max-width: 1280px;
-  margin: 0 auto 24px;
   padding: 16px;
   background: var(--app-surface);
   border-radius: 8px;
@@ -152,8 +156,8 @@ img {
 }
 
 @media (max-width: 767px) {
-  .panel {
-    margin: 0 16px 16px;
+  .history {
+    padding-bottom: 16px;
   }
 }
 </style>
