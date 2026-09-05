@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { QueueItem } from '@/composables/useOutputQueue'
+import { ARCHIVE_FORMATS, type ArchiveFormat } from '@/utils/archiveStore'
 import { formatBytes } from '@/utils/format'
 import { t } from '@/i18n'
 
@@ -14,9 +16,11 @@ defineProps<{
 const emit = defineEmits<{
   download: [item: QueueItem]
   remove: [id: string]
-  zip: []
+  archive: [format: ArchiveFormat]
   clear: []
 }>()
+
+const archiveFormat = ref<ArchiveFormat>('zip')
 </script>
 
 <template>
@@ -24,7 +28,20 @@ const emit = defineEmits<{
     <header>
       <span>{{ items.length ? summary : t('queue.empty') }}</span>
       <span v-if="errorCount">{{ t('queue.failed', { n: errorCount }) }}</span>
-      <el-button size="small" :disabled="!doneCount" @click="emit('zip')">{{ t('queue.zip') }}</el-button>
+      <div class="archive">
+        <span>{{ t('queue.archiveFormat') }}</span>
+        <el-select v-model="archiveFormat" size="small" class="archive-select">
+          <el-option
+            v-for="format in ARCHIVE_FORMATS"
+            :key="format"
+            :value="format"
+            :label="t(`queue.archive.${format}`)"
+          />
+        </el-select>
+        <el-button size="small" type="primary" :disabled="!doneCount" @click="emit('archive', archiveFormat)">
+          {{ t('queue.archiveDownload') }}
+        </el-button>
+      </div>
       <el-button size="small" :disabled="!items.length" @click="emit('clear')">{{ t('queue.clear') }}</el-button>
     </header>
     <p v-if="!items.length" class="empty">{{ t('queue.hint') }}</p>
@@ -65,6 +82,17 @@ header {
   margin-bottom: 12px;
   color: var(--app-faint);
   font-size: 13px;
+}
+
+.archive {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.archive-select {
+  width: 120px;
 }
 
 .empty {

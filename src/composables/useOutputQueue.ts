@@ -1,7 +1,7 @@
 import { computed, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
-import { uniqueZipName, zipStore } from '@/utils/zipStore'
+import { archiveFileName, packArchive, uniqueZipName, type ArchiveFormat } from '@/utils/archiveStore'
 import type { IcoFormat } from '@/utils/icoEncode'
 import type { RasterFormat } from '@/utils/svgRaster'
 import { t } from '@/i18n'
@@ -158,20 +158,26 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
     downloadBlob(item.blob, resultFileName(item))
   }
 
-  async function downloadZip() {
+  async function downloadArchive(format: ArchiveFormat = 'zip') {
     const ready = items.value.filter((item) => item.status === 'done' && item.blob)
     if (!ready.length) {
       ElMessage.warning(t('queue.noneReady'))
       return
     }
-    const used = new Set<string>()
-    const entries = await Promise.all(
-      ready.map(async (item) => ({
-        name: uniqueZipName(used, resultFileName(item)),
-        data: new Uint8Array(await item.blob!.arrayBuffer()),
-      })),
-    )
-    downloadBlob(zipStore(entries), 'images.zip')
+    try {
+      const used = new Set<string>()
+      const entries = await Promise.all(
+        ready.map(async (item) => ({
+          name: uniqueZipName(used, resultFileName(item)),
+          data: new Uint8Array(await item.blob!.arrayBuffer()),
+        })),
+      )
+      const blob = await packArchive(entries, format)
+      downloadBlob(blob, archiveFileName('images', format))
+    } catch (error) {
+      const detail = error instanceof Error && error.message ? error.message : t('errors.failed')
+      ElMessage.error(t('queue.archiveFail', { detail }))
+    }
   }
 
   onUnmounted(() => {
@@ -190,6 +196,6 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
     clearItems,
     scheduleRestart,
     downloadItem,
-    downloadZip,
+    downloadArchive,
   }
 }

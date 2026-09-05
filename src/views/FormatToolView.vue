@@ -33,7 +33,7 @@ const {
   clearItems,
   scheduleRestart,
   downloadItem,
-  downloadZip,
+  downloadArchive,
 } = useOutputQueue(async (source) => {
   const options = exportOptions.value
   if (options.target === 'keep') {
@@ -162,7 +162,7 @@ function onExportChange(options: ExportOptions) {
       :error-count="errorCount"
       @download="downloadItem"
       @remove="removeItem"
-      @zip="downloadZip"
+      @archive="downloadArchive"
       @clear="clearItems"
     />
     <ResultBar

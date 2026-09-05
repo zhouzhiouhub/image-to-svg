@@ -34,7 +34,7 @@ const {
   clearItems,
   scheduleRestart,
   downloadItem,
-  downloadZip,
+  downloadArchive,
 } = useOutputQueue(async (source) => {
   const options = icoOptions.value
   if (!options.sizes.length) throw new Error(t('icoPanel.needSize'))
@@ -146,7 +146,7 @@ function onIcoChange(options: IcoPanelOptions) {
       :error-count="errorCount"
       @download="downloadItem"
       @remove="removeItem"
-      @zip="downloadZip"
+      @archive="downloadArchive"
       @clear="clearItems"
     />
     <ResultBar
