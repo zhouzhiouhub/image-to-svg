@@ -8,7 +8,7 @@ export const zh = {
   },
   home: {
     title: '图片处理',
-    lead: '免费在浏览器本地把 PNG、JPG 转成 SVG，也能裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。',
+    lead: '免费在浏览器本地把 PNG、JPG 转成 SVG 或 ICO，也能裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。',
     start: '开始使用',
     soon: '查看计划',
   },
@@ -25,13 +25,17 @@ export const zh = {
       title: '转格式 / 压缩',
       description: '换成 PNG、JPEG、WebP，或按原格式压缩。可一次处理多张并打包 zip。',
     },
+    ico: {
+      title: '图片转 ICO',
+      description: '导出多尺寸 ICO 图标，可选 16 到 256 预设或自定义宽高。适合网站 favicon。',
+    },
     available: '可用',
   },
   seo: {
     home: {
-      title: 'Kinolin Tool - 本地图片转 SVG、裁剪与压缩',
+      title: 'Kinolin Tool - 本地图片转 SVG、ICO、裁剪与压缩',
       description:
-        '免费在浏览器本地把 PNG、JPG 转成 SVG，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。',
+        '免费在浏览器本地把 PNG、JPG 转成 SVG 或 ICO，也可裁剪、旋转、改尺寸，以及转换 PNG / JPEG / WebP 并压缩。图片不上传服务器。',
     },
     svg: {
       title: '图片转 SVG',
@@ -46,13 +50,18 @@ export const zh = {
       title: '转格式 / 压缩',
       description: '将图片转为 PNG、JPEG 或 WebP，或按原格式压缩体积。支持一次处理多张并打包 zip，图片不离开浏览器。',
     },
+    ico: {
+      title: '图片转 ICO',
+      description:
+        '把 PNG、JPG 等图片转成多尺寸 ICO 图标，可选常用预设或自定义宽高。全部在浏览器本地完成，适合 favicon。',
+    },
     privacy: {
       title: '隐私与安全',
       description: '图片只在浏览器本地处理，不上传服务器。操作记录保存在本机，清除站点数据后才会消失。',
     },
     notFound: {
       title: '页面不存在',
-      description: '没有这个页面。可以返回首页，或使用图片转 SVG、调整画面、转格式压缩。',
+      description: '没有这个页面。可以返回首页，或使用图片转 SVG、ICO、调整画面、转格式压缩。',
     },
   },
   footer: {
@@ -106,6 +115,7 @@ export const zh = {
     svgAlt: 'SVG 结果',
     editAlt: '调整结果',
     exportAlt: '处理结果',
+    icoAlt: 'ICO 结果',
   },
   trace: {
     title: '转换方式',
@@ -185,6 +195,24 @@ export const zh = {
     keepQuality: '按原格式高质量重编码；若体积没有变小，会保留原文件。',
     keepSmaller: '降低质量以换取更小文件，仍导出为原格式。',
     convertHint: '按所选格式重新编码。可一次处理多张并打包 zip。',
+  },
+  icoPanel: {
+    title: 'ICO 参数',
+    needFile: '请先上传图片后再选择尺寸',
+    loading: '正在生成 ICO…',
+    sizes: '尺寸',
+    custom: '自定义',
+    fit: '适配',
+    contain: '完整显示',
+    cover: '居中裁剪',
+    stretch: '拉伸',
+    background: '背景',
+    transparent: '透明',
+    white: '白色',
+    knockout: '会把图片边缘的白底抠成透明。',
+    hint: '勾选多个尺寸会打进同一个 ICO。自定义宽高上限 256。',
+    needSize: '请至少选择一个尺寸',
+    pipeline: '{from} → ICO（{count} 档，最大 {size}）',
   },
   result: {
     fallback: '处理结果',

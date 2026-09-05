@@ -37,6 +37,11 @@ const router = createRouter({
       component: () => import('@/views/FormatToolView.vue'),
     },
     {
+      path: '/ico',
+      name: 'ico',
+      component: () => import('@/views/IcoToolView.vue'),
+    },
+    {
       path: '/format',
       redirect: '/export',
     },

@@ -13,11 +13,12 @@ export const seoPages: Record<string, SeoPage> = {
   svg: { path: '/svg' },
   edit: { path: '/edit' },
   export: { path: '/export' },
+  ico: { path: '/ico' },
   privacy: { path: '/privacy' },
   notFound: { path: '/404', index: false },
 }
 
-export const INDEXABLE_ROUTE_NAMES = ['home', 'svg', 'edit', 'export', 'privacy'] as const
+export const INDEXABLE_ROUTE_NAMES = ['home', 'svg', 'edit', 'export', 'ico', 'privacy'] as const
 
 export function canonicalUrl(path: string, origin: string) {
   const base = (origin || DEFAULT_SITE_URL).replace(/\/$/, '')
@@ -71,6 +72,7 @@ function jsonLd(description: string, url: string, key: string, locale: Locale, p
       translate(locale, 'tools.svg.title'),
       translate(locale, 'tools.edit.title'),
       translate(locale, 'tools.export.title'),
+      translate(locale, 'tools.ico.title'),
     ],
   }
   if (key === 'home' || key === 'privacy') {

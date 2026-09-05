@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import type { IcoFormat } from '@/utils/icoEncode'
 import type { RasterFormat } from '@/utils/svgRaster'
 
 export type HistoryRecordInput = {
@@ -8,7 +9,7 @@ export type HistoryRecordInput = {
   sourceName: string
   svg?: string
   rasterBlob?: Blob
-  rasterType?: RasterFormat
+  rasterType?: RasterFormat | IcoFormat
   keptOriginal?: boolean
 }
 

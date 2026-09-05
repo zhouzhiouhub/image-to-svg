@@ -60,7 +60,13 @@ import { t } from '@/i18n'
 
 @media (min-width: 768px) {
   .grid {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 }
 

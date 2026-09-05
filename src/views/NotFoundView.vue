@@ -13,6 +13,7 @@ import { t } from '@/i18n'
       <RouterLink to="/svg">{{ t('tools.svg.title') }}</RouterLink>
       <RouterLink to="/edit">{{ t('tools.edit.title') }}</RouterLink>
       <RouterLink to="/export">{{ t('tools.export.title') }}</RouterLink>
+      <RouterLink to="/ico">{{ t('tools.ico.title') }}</RouterLink>
     </nav>
   </main>
 </template>

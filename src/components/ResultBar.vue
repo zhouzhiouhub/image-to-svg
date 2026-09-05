@@ -5,6 +5,7 @@ import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import { recordHistory } from '@/composables/useSessionHistory'
 import { formatBytes } from '@/utils/format'
+import type { IcoFormat } from '@/utils/icoEncode'
 import type { RasterFormat } from '@/utils/svgRaster'
 import { t } from '@/i18n'
 
@@ -13,7 +14,7 @@ const props = defineProps<{
   pipeline?: string
   svg?: string | null
   rasterBlob?: Blob | null
-  rasterType?: RasterFormat
+  rasterType?: RasterFormat | IcoFormat
   resultWidth?: number
   resultHeight?: number
   keptOriginal?: boolean
@@ -54,6 +55,7 @@ function rasterExt() {
   const type = props.rasterType ?? props.rasterBlob?.type
   if (type === 'image/jpeg') return 'jpg'
   if (type === 'image/webp') return 'webp'
+  if (type === 'image/x-icon') return 'ico'
   return 'png'
 }
 

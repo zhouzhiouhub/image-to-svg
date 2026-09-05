@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { useSessionHistory, removeHistory, clearHistory } from '@/composables/useSessionHistory'
 import { formatBytes } from '@/utils/format'
+import type { IcoFormat } from '@/utils/icoEncode'
 import type { RasterFormat } from '@/utils/svgRaster'
 import { t } from '@/i18n'
 import '@/ui/element-plus'
 
 const { records } = useSessionHistory()
 
-function rasterExt(type?: RasterFormat, blob?: Blob) {
+function rasterExt(type?: RasterFormat | IcoFormat, blob?: Blob) {
   const mime = type ?? blob?.type
   if (mime === 'image/jpeg') return 'jpg'
   if (mime === 'image/webp') return 'webp'
+  if (mime === 'image/x-icon') return 'ico'
   return 'png'
 }
 

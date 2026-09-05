@@ -8,7 +8,7 @@ export const en = {
   },
   home: {
     title: 'Image tools',
-    lead: 'Convert PNG or JPG to SVG in your browser, or crop, rotate, resize, and convert or compress PNG, JPEG, and WebP. Images never leave this device.',
+    lead: 'Convert PNG or JPG to SVG or ICO in your browser, or crop, rotate, resize, and convert or compress PNG, JPEG, and WebP. Images never leave this device.',
     start: 'Get started',
     soon: 'See roadmap',
   },
@@ -25,13 +25,17 @@ export const en = {
       title: 'Convert / compress',
       description: 'Convert to PNG, JPEG, or WebP, or compress in place. Batch files and download a zip.',
     },
+    ico: {
+      title: 'Image to ICO',
+      description: 'Export multi-size ICO icons with presets from 16 to 256, or a custom width and height. Ideal for favicons.',
+    },
     available: 'Ready',
   },
   seo: {
     home: {
-      title: 'Kinolin Tool - local image to SVG, crop, and compress',
+      title: 'Kinolin Tool - local image to SVG, ICO, crop, and compress',
       description:
-        'Convert PNG or JPG to SVG in your browser, or crop, rotate, resize, and convert or compress PNG, JPEG, and WebP. Images are not uploaded.',
+        'Convert PNG or JPG to SVG or ICO in your browser, or crop, rotate, resize, and convert or compress PNG, JPEG, and WebP. Images are not uploaded.',
     },
     svg: {
       title: 'Image to SVG',
@@ -46,13 +50,18 @@ export const en = {
       title: 'Convert / compress',
       description: 'Convert images to PNG, JPEG, or WebP, or compress in the original format. Process many files and download a zip. Files stay in the browser.',
     },
+    ico: {
+      title: 'Image to ICO',
+      description:
+        'Turn PNG or JPG into multi-size ICO icons with common presets or a custom size. Everything runs locally — ideal for favicons.',
+    },
     privacy: {
       title: 'Privacy & security',
       description: 'Images are processed in your browser and never uploaded. History stays on this device until you clear site data.',
     },
     notFound: {
       title: 'Page not found',
-      description: 'This page does not exist. Go home, or open Image to SVG, Adjust image, or Convert / compress.',
+      description: 'This page does not exist. Go home, or open Image to SVG, Image to ICO, Adjust image, or Convert / compress.',
     },
   },
   footer: {
@@ -175,6 +184,24 @@ export const en = {
     keepSmaller: 'Lowers quality for a smaller file, still in the original format.',
     convertHint: 'Re-encodes to the selected format. You can process many files and download a zip.',
   },
+  icoPanel: {
+    title: 'ICO options',
+    needFile: 'Upload an image to choose sizes',
+    loading: 'Building ICO…',
+    sizes: 'Sizes',
+    custom: 'Custom',
+    fit: 'Fit',
+    contain: 'Contain',
+    cover: 'Cover',
+    stretch: 'Stretch',
+    background: 'BG',
+    transparent: 'Clear',
+    white: 'White',
+    knockout: 'White edges around the subject become transparent.',
+    hint: 'Selected sizes are packed into one ICO. Custom size is capped at 256.',
+    needSize: 'Select at least one size',
+    pipeline: '{from} → ICO ({count} sizes, max {size})',
+  },
   result: {
     fallback: 'Result',
     svgToRaster: 'SVG → raster',
@@ -228,6 +255,7 @@ export const en = {
     svgAlt: 'SVG result',
     editAlt: 'Adjusted image',
     exportAlt: 'Processed image',
+    icoAlt: 'ICO result',
   },
   validate: {
     unsupported: 'Use PNG, JPG, WebP, BMP, static GIF, or SVG',

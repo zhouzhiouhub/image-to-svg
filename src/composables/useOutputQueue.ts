@@ -2,12 +2,14 @@ import { computed, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import { uniqueZipName, zipStore } from '@/utils/zipStore'
+import type { IcoFormat } from '@/utils/icoEncode'
 import type { RasterFormat } from '@/utils/svgRaster'
 import { t } from '@/i18n'
 
 export const MAX_QUEUE = 30
 
 export type QueueStatus = 'queued' | 'running' | 'done' | 'error'
+export type QueueMime = RasterFormat | IcoFormat
 
 export type QueueItem = {
   id: string
@@ -15,27 +17,30 @@ export type QueueItem = {
   status: QueueStatus
   error?: string
   blob?: Blob
-  type?: RasterFormat
+  type?: QueueMime
   width?: number
   height?: number
   keptOriginal?: boolean
+  previewBlob?: Blob
 }
 
 export type QueueResult = {
   blob: Blob
-  type: RasterFormat
+  type: QueueMime
   width: number
   height: number
   keptOriginal?: boolean
+  previewBlob?: Blob
 }
 
 function fileKey(file: File) {
   return `${file.name}:${file.size}:${file.lastModified}`
 }
 
-function rasterExt(type?: RasterFormat) {
+function rasterExt(type?: QueueMime) {
   if (type === 'image/jpeg') return 'jpg'
   if (type === 'image/webp') return 'webp'
+  if (type === 'image/x-icon') return 'ico'
   return 'png'
 }
 
@@ -115,10 +120,12 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
         item.width = result.width
         item.height = result.height
         item.keptOriginal = result.keptOriginal === true
+        item.previewBlob = result.previewBlob
         item.status = 'done'
       } catch (error) {
         if (current !== jobSeq) return
         item.blob = undefined
+        item.previewBlob = undefined
         item.status = 'error'
         item.error = error instanceof Error && error.message ? error.message : t('errors.failed')
       }
@@ -133,6 +140,7 @@ export function useOutputQueue(process: (source: AcceptedFile) => Promise<QueueR
       item.blob = undefined
       item.error = undefined
       item.keptOriginal = undefined
+      item.previewBlob = undefined
     }
     void runQueue()
   }
