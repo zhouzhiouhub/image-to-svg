@@ -3,22 +3,24 @@ import { uniqueZipName, zipStore, type ZipEntry } from '@/utils/zipStore'
 export type { ZipEntry }
 export { uniqueZipName }
 
-export type ArchiveFormat = 'zip' | 'tar' | 'tgz' | '7z'
+export type ArchiveFormat = 'zip' | '7z' | 'tar' | 'tgz' | 'wim'
 
-export const ARCHIVE_FORMATS: ArchiveFormat[] = ['zip', 'tar', 'tgz', '7z']
+export const ARCHIVE_FORMATS: ArchiveFormat[] = ['zip', '7z', 'tar', 'tgz', 'wim']
 
 const ARCHIVE_EXT: Record<ArchiveFormat, string> = {
   zip: 'zip',
+  '7z': '7z',
   tar: 'tar',
   tgz: 'tar.gz',
-  '7z': '7z',
+  wim: 'wim',
 }
 
 const ARCHIVE_MIME: Record<ArchiveFormat, string> = {
   zip: 'application/zip',
+  '7z': 'application/x-7z-compressed',
   tar: 'application/x-tar',
   tgz: 'application/gzip',
-  '7z': 'application/x-7z-compressed',
+  wim: 'application/x-ms-wim',
 }
 
 export function archiveFileName(stem: string, format: ArchiveFormat) {
@@ -115,9 +117,9 @@ function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 
 export async function packArchive(files: ZipEntry[], format: ArchiveFormat): Promise<Blob> {
   if (format === 'zip') return zipStore(files)
-  if (format === '7z') {
+  if (format === '7z' || format === 'wim') {
     const { sevenZipStore } = await import('@/utils/sevenZipStore')
-    return sevenZipStore(files)
+    return sevenZipStore(files, format)
   }
 
   const tar = tarStore(files)

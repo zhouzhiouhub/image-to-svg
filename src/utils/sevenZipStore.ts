@@ -1,5 +1,27 @@
 import type { ZipEntry } from '@/utils/zipStore'
 
+export type SevenZipPackFormat = '7z' | 'wim'
+
+const PACK: Record<
+  SevenZipPackFormat,
+  { typeFlag: string; extraArgs: string[]; fileName: string; mime: string; fail: string }
+> = {
+  '7z': {
+    typeFlag: '-t7z',
+    extraArgs: ['-mx=5'],
+    fileName: 'archive.7z',
+    mime: 'application/x-7z-compressed',
+    fail: '7z 打包失败',
+  },
+  wim: {
+    typeFlag: '-twim',
+    extraArgs: [],
+    fileName: 'archive.wim',
+    mime: 'application/x-ms-wim',
+    fail: 'WIM 打包失败',
+  },
+}
+
 function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer
 }
@@ -16,14 +38,14 @@ async function loadWasmBinary() {
     wasmBinaryPromise = import('7z-wasm/7zz.wasm?url')
       .then((mod) => fetch(mod.default))
       .then(async (response) => {
-        if (!response.ok) throw new Error('无法加载 7z 引擎')
+        if (!response.ok) throw new Error('无法加载压缩引擎')
         return response.arrayBuffer()
       })
   }
   return wasmBinaryPromise
 }
 
-function runMain(callMain: (args: string[]) => void, args: string[]) {
+function runMain(callMain: (args: string[]) => void, args: string[], failMessage: string) {
   try {
     callMain(args)
   } catch (error) {
@@ -33,14 +55,18 @@ function runMain(callMain: (args: string[]) => void, args: string[]) {
         : NaN
     if (status === 0) return
     if (Number.isFinite(status) && status !== 0) {
-      throw new Error(`7z 打包失败（代码 ${status}）`)
+      throw new Error(`${failMessage}（代码 ${status}）`)
     }
     throw error
   }
 }
 
-export async function sevenZipStore(files: ZipEntry[]): Promise<Blob> {
+export async function sevenZipStore(
+  files: ZipEntry[],
+  format: SevenZipPackFormat = '7z',
+): Promise<Blob> {
   if (!files.length) throw new Error('没有可打包的文件')
+  const config = PACK[format]
 
   const [{ default: SevenZip }, wasmBinary] = await Promise.all([
     import('7z-wasm'),
@@ -75,15 +101,20 @@ export async function sevenZipStore(files: ZipEntry[]): Promise<Blob> {
     sevenZip.FS.writeFile(`/in/${name}`, file.data)
   }
 
-  runMain(sevenZip.callMain.bind(sevenZip), ['a', '-t7z', '-mx=5', '-y', '/out/archive.7z', '/in/*'])
+  const outPath = `/out/${config.fileName}`
+  runMain(
+    sevenZip.callMain.bind(sevenZip),
+    ['a', config.typeFlag, ...config.extraArgs, '-y', outPath, '/in/*'],
+    config.fail,
+  )
 
   let packed: Uint8Array
   try {
-    packed = sevenZip.FS.readFile('/out/archive.7z', { encoding: 'binary' })
+    packed = sevenZip.FS.readFile(outPath, { encoding: 'binary' })
   } catch {
-    throw new Error('7z 打包失败')
+    throw new Error(config.fail)
   }
-  if (!packed.length) throw new Error('7z 打包失败')
+  if (!packed.length) throw new Error(config.fail)
 
-  return new Blob([toArrayBuffer(packed)], { type: 'application/x-7z-compressed' })
+  return new Blob([toArrayBuffer(packed)], { type: config.mime })
 }

@@ -240,9 +240,10 @@ export const zh = {
     archiveFail: '打包失败：{detail}',
     archive: {
       zip: 'ZIP',
+      '7z': '7Z',
       tar: 'TAR',
       tgz: 'TAR.GZ',
-      '7z': '7Z',
+      wim: 'WIM',
     },
     clear: '清空',
     hint: '可一次拖入多张，按当前参数逐张处理',

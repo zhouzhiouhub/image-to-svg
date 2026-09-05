@@ -228,9 +228,10 @@ export const en = {
     archiveFail: 'Pack failed: {detail}',
     archive: {
       zip: 'ZIP',
+      '7z': '7Z',
       tar: 'TAR',
       tgz: 'TAR.GZ',
-      '7z': '7Z',
+      wim: 'WIM',
     },
     clear: 'Clear',
     hint: 'Drop several files; they are processed with the current settings',
