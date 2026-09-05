@@ -27,7 +27,7 @@ export const en = {
     },
     ico: {
       title: 'Image to ICO',
-      description: 'Export multi-size ICO icons with presets from 16 to 256, or a custom width and height. Ideal for favicons.',
+      description: 'Export an ICO at a preset or custom size. Ideal for favicons.',
     },
     available: 'Ready',
   },
@@ -53,7 +53,7 @@ export const en = {
     ico: {
       title: 'Image to ICO',
       description:
-        'Turn PNG or JPG into multi-size ICO icons with common presets or a custom size. Everything runs locally — ideal for favicons.',
+        'Turn PNG or JPG into an ICO at a common preset or custom size. Everything runs locally — ideal for favicons.',
     },
     privacy: {
       title: 'Privacy & security',
@@ -198,9 +198,9 @@ export const en = {
     transparent: 'Clear',
     white: 'White',
     knockout: 'White edges around the subject become transparent.',
-    hint: 'Selected sizes are packed into one ICO. Custom size is capped at 256.',
+    hint: 'Pick one size for the ICO. Custom size is capped at 256.',
     needSize: 'Select at least one size',
-    pipeline: '{from} → ICO ({count} sizes, max {size})',
+    pipeline: '{from} → ICO {size}',
   },
   result: {
     fallback: 'Result',

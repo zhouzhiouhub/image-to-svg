@@ -3,83 +3,55 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import '@/ui/element-plus'
 import UploadPanel from '@/components/UploadPanel.vue'
+import type { AcceptedFile } from '@/components/UploadPanel.vue'
 import IcoParamPanel from '@/components/IcoParamPanel.vue'
 import type { IcoPanelOptions } from '@/components/IcoParamPanel.vue'
 import CompareView from '@/components/CompareView.vue'
-import QueueResultList from '@/components/QueueResultList.vue'
 import ResultBar from '@/components/ResultBar.vue'
-import { MAX_QUEUE, useOutputQueue } from '@/composables/useOutputQueue'
 import { encodeIcoFromFile } from '@/utils/icoEncode'
 import { t } from '@/i18n'
 
+const source = ref<AcceptedFile | null>(null)
 const previewUrl = ref<string | null>(null)
 const resultUrl = ref<string | null>(null)
+const resultBlob = ref<Blob | null>(null)
+const previewBlob = ref<Blob | null>(null)
+const resultWidth = ref<number>()
+const resultHeight = ref<number>()
+const converting = ref(false)
 const icoOptions = ref<IcoPanelOptions>({
-  sizes: [
-    { width: 16, height: 16 },
-    { width: 32, height: 32 },
-    { width: 48, height: 48 },
-  ],
+  sizes: [{ width: 32, height: 32 }],
   fit: 'contain',
 })
+let jobSeq = 0
+let encodeTimer: ReturnType<typeof setTimeout> | null = null
 
-const {
-  items,
-  converting,
-  doneCount,
-  errorCount,
-  single,
-  addFiles,
-  removeItem,
-  clearItems,
-  scheduleRestart,
-  downloadItem,
-  downloadArchive,
-} = useOutputQueue(async (source) => {
-  const options = icoOptions.value
-  if (!options.sizes.length) throw new Error(t('icoPanel.needSize'))
-  const result = await encodeIcoFromFile(source.file, source.kind, options)
-  return {
-    blob: result.blob,
-    type: result.type,
-    width: result.width,
-    height: result.height,
-    previewBlob: result.previewBlob,
-  }
-})
-
-const source = computed(() => single.value?.source ?? null)
-const resultBlob = computed(() => single.value?.blob ?? null)
-const resultType = computed(() => single.value?.type ?? 'image/x-icon')
-const resultWidth = computed(() => single.value?.width)
-const resultHeight = computed(() => single.value?.height)
-const previewBlob = computed(() => single.value?.previewBlob ?? null)
-const many = computed(() => items.value.length > 1)
 const pipeline = computed(() => {
-  if (many.value) {
-    return t('queue.progress', {
-      action: t('queue.convert'),
-      done: doneCount.value,
-      total: items.value.length,
-    })
-  }
   if (!source.value || !resultWidth.value || !resultHeight.value) return ''
-  const count = icoOptions.value.sizes.length
+  const size = icoOptions.value.sizes[0]
+  const label = size ? `${size.width} × ${size.height}` : `${resultWidth.value} × ${resultHeight.value}`
   return t('icoPanel.pipeline', {
     from: `${source.value.width} × ${source.value.height}`,
-    count,
-    size: `${resultWidth.value} × ${resultHeight.value}`,
+    size: label,
   })
 })
 
 watch(source, (value, _prev, onCleanup) => {
+  if (encodeTimer) clearTimeout(encodeTimer)
+  jobSeq += 1
+  resultBlob.value = null
+  previewBlob.value = null
+  resultWidth.value = undefined
+  resultHeight.value = undefined
   if (!value) {
     previewUrl.value = null
+    converting.value = false
     return
   }
   const url = URL.createObjectURL(value.file)
   previewUrl.value = url
   onCleanup(() => URL.revokeObjectURL(url))
+  scheduleEncode()
 })
 
 watch(previewBlob, (blob, _prev, onCleanup) => {
@@ -92,39 +64,73 @@ watch(previewBlob, (blob, _prev, onCleanup) => {
   resultUrl.value = null
 })
 
-watch(icoOptions, () => {
-  scheduleRestart()
-})
-
 watch(
-  () => single.value?.status,
-  (status) => {
-    if (status === 'error' && single.value?.error) {
-      ElMessage.error(t('queue.failedDetail', { detail: single.value.error }))
-    }
+  icoOptions,
+  () => {
+    if (!source.value) return
+    scheduleEncode()
   },
+  { deep: true },
 )
 
 onUnmounted(() => {
+  jobSeq += 1
+  if (encodeTimer) clearTimeout(encodeTimer)
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
 })
 
+function scheduleEncode() {
+  if (encodeTimer) clearTimeout(encodeTimer)
+  encodeTimer = setTimeout(() => {
+    void runEncode()
+  }, 180)
+}
+
+async function runEncode() {
+  const current = ++jobSeq
+  const file = source.value
+  if (!file) return
+  if (!icoOptions.value.sizes.length) {
+    ElMessage.warning(t('icoPanel.needSize'))
+    return
+  }
+  converting.value = true
+  try {
+    const result = await encodeIcoFromFile(file.file, file.kind, icoOptions.value)
+    if (current !== jobSeq) return
+    resultBlob.value = result.blob
+    previewBlob.value = result.previewBlob
+    resultWidth.value = result.width
+    resultHeight.value = result.height
+  } catch (error) {
+    if (current !== jobSeq) return
+    resultBlob.value = null
+    previewBlob.value = null
+    const detail = error instanceof Error && error.message ? error.message : t('errors.failed')
+    ElMessage.error(t('queue.failedDetail', { detail }))
+  } finally {
+    if (current === jobSeq) converting.value = false
+  }
+}
+
+function onAccepted(file: AcceptedFile) {
+  source.value = file
+}
+
 function onIcoChange(options: IcoPanelOptions) {
   icoOptions.value = options
+}
+
+function clearSource() {
+  source.value = null
 }
 </script>
 
 <template>
   <main class="tool">
-    <UploadPanel
-      multiple
-      :max-files="MAX_QUEUE"
-      :has-file="!!source && !many"
-      @accepted-many="addFiles"
-    />
+    <UploadPanel :has-file="!!source" @accepted="onAccepted" />
     <CompareView
-      v-if="!many"
       :original-url="previewUrl"
       :original-name="source?.file.name"
       :result-url="resultUrl"
@@ -132,32 +138,19 @@ function onIcoChange(options: IcoPanelOptions) {
       :converting="converting"
     />
     <IcoParamPanel
-      :disabled="!items.length"
+      :disabled="!source"
       :loading="converting"
       :source-format="source?.format"
       @change="onIcoChange"
     />
-    <QueueResultList
-      v-if="many"
-      :items="items"
-      :converting="converting"
-      :summary="pipeline"
-      :done-count="doneCount"
-      :error-count="errorCount"
-      @download="downloadItem"
-      @remove="removeItem"
-      @archive="downloadArchive"
-      @clear="clearItems"
-    />
     <ResultBar
-      v-else
       :source="source"
       :pipeline="pipeline"
       :raster-blob="resultBlob"
-      :raster-type="resultType"
+      :raster-type="'image/x-icon'"
       :result-width="resultWidth"
       :result-height="resultHeight"
-      @replace="clearItems"
+      @replace="clearSource"
     />
   </main>
 </template>

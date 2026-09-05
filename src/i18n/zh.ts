@@ -27,7 +27,7 @@ export const zh = {
     },
     ico: {
       title: '图片转 ICO',
-      description: '导出多尺寸 ICO 图标，可选 16 到 256 预设或自定义宽高。适合网站 favicon。',
+      description: '按预设或自定义尺寸导出 ICO，适合网站 favicon。',
     },
     available: '可用',
   },
@@ -52,8 +52,7 @@ export const zh = {
     },
     ico: {
       title: '图片转 ICO',
-      description:
-        '把 PNG、JPG 等图片转成多尺寸 ICO 图标，可选常用预设或自定义宽高。全部在浏览器本地完成，适合 favicon。',
+      description: '把 PNG、JPG 等图片转成 ICO，可选常用预设或自定义宽高。全部在浏览器本地完成，适合 favicon。',
     },
     privacy: {
       title: '隐私与安全',
@@ -210,9 +209,9 @@ export const zh = {
     transparent: '透明',
     white: '白色',
     knockout: '会把图片边缘的白底抠成透明。',
-    hint: '勾选多个尺寸会打进同一个 ICO。自定义宽高上限 256。',
+    hint: '选择一个尺寸导出 ICO。自定义宽高上限 256。',
     needSize: '请至少选择一个尺寸',
-    pipeline: '{from} → ICO（{count} 档，最大 {size}）',
+    pipeline: '{from} → ICO {size}',
   },
   result: {
     fallback: '处理结果',

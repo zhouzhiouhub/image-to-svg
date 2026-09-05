@@ -28,7 +28,7 @@ const archiveFormat = ref<ArchiveFormat>('zip')
     <header>
       <span>{{ items.length ? summary : t('queue.empty') }}</span>
       <span v-if="errorCount">{{ t('queue.failed', { n: errorCount }) }}</span>
-      <div class="archive">
+      <div v-if="doneCount" class="archive">
         <span>{{ t('queue.archiveFormat') }}</span>
         <el-select v-model="archiveFormat" size="small" class="archive-select">
           <el-option
@@ -38,7 +38,7 @@ const archiveFormat = ref<ArchiveFormat>('zip')
             :label="t(`queue.archive.${format}`)"
           />
         </el-select>
-        <el-button size="small" type="primary" :disabled="!doneCount" @click="emit('archive', archiveFormat)">
+        <el-button size="small" type="primary" @click="emit('archive', archiveFormat)">
           {{ t('queue.archiveDownload') }}
         </el-button>
       </div>

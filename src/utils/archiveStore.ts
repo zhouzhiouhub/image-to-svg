@@ -102,6 +102,10 @@ export function tarStore(files: ZipEntry[]): Uint8Array {
   return concat(parts)
 }
 
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+  return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer
+}
+
 async function gzipBytes(data: Uint8Array): Promise<Uint8Array> {
   if (typeof CompressionStream === 'undefined') {
     throw new Error('当前浏览器不支持 GZIP 压缩')
@@ -109,10 +113,6 @@ async function gzipBytes(data: Uint8Array): Promise<Uint8Array> {
   const stream = new Blob([toArrayBuffer(data)]).stream().pipeThrough(new CompressionStream('gzip'))
   const buffer = await new Response(stream).arrayBuffer()
   return new Uint8Array(buffer)
-}
-
-function toArrayBuffer(data: Uint8Array): ArrayBuffer {
-  return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength) as ArrayBuffer
 }
 
 export async function packArchive(files: ZipEntry[], format: ArchiveFormat): Promise<Blob> {

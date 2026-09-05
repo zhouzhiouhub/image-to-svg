@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const form = reactive({
-  selected: [16, 32, 48] as number[],
+  selected: 32 as number | null,
   customEnabled: false,
   customWidth: 64,
   customHeight: 64,
@@ -43,17 +43,19 @@ const knockoutWhite = computed(
     isOpaqueRasterSource(props.sourceFormat),
 )
 
+const showBackground = computed(() => form.fit === 'contain')
+
 const sizes = computed<IcoSize[]>(() => {
-  const next: IcoSize[] = [...form.selected]
-    .sort((a, b) => a - b)
-    .map((size) => ({ width: size, height: size }))
   if (form.customEnabled) {
-    next.push({
-      width: Math.min(MAX_ICO_EDGE, Math.max(1, Math.round(form.customWidth))),
-      height: Math.min(MAX_ICO_EDGE, Math.max(1, Math.round(form.customHeight))),
-    })
+    return [
+      {
+        width: Math.min(MAX_ICO_EDGE, Math.max(1, Math.round(form.customWidth))),
+        height: Math.min(MAX_ICO_EDGE, Math.max(1, Math.round(form.customHeight))),
+      },
+    ]
   }
-  return next
+  const size = form.selected ?? 32
+  return [{ width: size, height: size }]
 })
 
 const options = computed<IcoPanelOptions>(() => ({
@@ -71,25 +73,16 @@ watch(
   { immediate: true },
 )
 
-function isSelected(size: number) {
-  return form.selected.includes(size)
-}
-
-function togglePreset(size: number) {
-  if (isSelected(size)) {
-    if (form.selected.length === 1 && !form.customEnabled) return
-    form.selected = form.selected.filter((item) => item !== size)
-    return
-  }
-  form.selected = [...form.selected, size].sort((a, b) => a - b)
+function selectPreset(size: number) {
+  form.customEnabled = false
+  form.selected = size
 }
 
 function onCustomToggle(enabled: string | number | boolean) {
   const on = enabled === true
-  if (!on && form.selected.length === 0) {
-    form.selected = [16, 32, 48]
-  }
   form.customEnabled = on
+  if (on) form.selected = null
+  else if (form.selected == null) form.selected = 32
 }
 </script>
 
@@ -106,8 +99,8 @@ function onCustomToggle(enabled: string | number | boolean) {
             v-for="preset in presets"
             :key="preset.size"
             size="small"
-            :type="isSelected(preset.size) ? 'primary' : 'default'"
-            @click="togglePreset(preset.size)"
+            :type="!form.customEnabled && form.selected === preset.size ? 'primary' : 'default'"
+            @click="selectPreset(preset.size)"
           >
             {{ preset.label }}
           </el-button>
@@ -142,7 +135,7 @@ function onCustomToggle(enabled: string | number | boolean) {
           <el-radio-button value="stretch">{{ t('icoPanel.stretch') }}</el-radio-button>
         </el-radio-group>
       </div>
-      <div v-if="form.fit === 'contain'" class="row">
+      <div v-if="showBackground" class="row">
         <span>{{ t('icoPanel.background') }}</span>
         <el-radio-group v-model="form.background" size="small">
           <el-radio-button value="transparent">{{ t('icoPanel.transparent') }}</el-radio-button>
