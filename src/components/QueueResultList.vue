@@ -92,7 +92,7 @@ header {
 }
 
 .archive-select {
-  width: 120px;
+  width: 128px;
 }
 
 .empty {

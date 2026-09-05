@@ -230,6 +230,7 @@ export const en = {
       zip: 'ZIP',
       tar: 'TAR',
       tgz: 'TAR.GZ',
+      '7z': '7Z',
     },
     clear: 'Clear',
     hint: 'Drop several files; they are processed with the current settings',

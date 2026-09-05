@@ -242,6 +242,7 @@ export const zh = {
       zip: 'ZIP',
       tar: 'TAR',
       tgz: 'TAR.GZ',
+      '7z': '7Z',
     },
     clear: '清空',
     hint: '可一次拖入多张，按当前参数逐张处理',

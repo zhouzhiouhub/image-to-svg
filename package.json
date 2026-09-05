@@ -17,6 +17,7 @@
     "cf:preview": "pnpm build && wrangler dev"
   },
   "dependencies": {
+    "7z-wasm": "^1.2.0",
     "@element-plus/icons-vue": "^2.3.2",
     "element-plus": "^2.14.5",
     "esm-potrace-wasm": "^0.5.1",

@@ -15,6 +15,11 @@ declare module '*.wasm' {
   export default src
 }
 
+declare module '*.wasm?url' {
+  const src: string
+  export default src
+}
+
 declare module 'imagetracerjs' {
   export type ImageTracerOptions = {
     ltres?: number
